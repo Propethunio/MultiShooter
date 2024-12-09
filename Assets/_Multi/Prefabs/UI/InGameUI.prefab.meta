@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2bb6c097c5a3d954ebfbbc0d6bc073ec
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Prefabs/UI/InGameUI.prefab
+  uploadId: 686358

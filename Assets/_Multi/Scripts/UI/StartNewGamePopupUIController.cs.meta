@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 2c7ec04fe01ddb24ab5b0b3fdfc4eca7
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Scripts/UI/StartNewGamePopupUIController.cs
+  uploadId: 686358

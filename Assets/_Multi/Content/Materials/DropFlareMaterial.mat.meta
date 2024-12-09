@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 13859f74ae1ef044bab7ae7fcf13e4ab
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Content/Materials/DropFlareMaterial.mat
+  uploadId: 686358

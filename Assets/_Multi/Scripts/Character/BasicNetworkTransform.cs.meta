@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e9fe2383617dff545b72288f444113de
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Scripts/Character/BasicNetworkTransform.cs
+  uploadId: 686358

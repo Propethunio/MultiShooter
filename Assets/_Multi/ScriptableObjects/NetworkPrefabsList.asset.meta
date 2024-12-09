@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2eefed5145faf504a96bf6b6a35ef6aa
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/ScriptableObjects/NetworkPrefabsList.asset
+  uploadId: 686358

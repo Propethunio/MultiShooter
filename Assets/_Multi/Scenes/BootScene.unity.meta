@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 81d57b43ce33be44ca8f4f56e067c056
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Scenes/BootScene.unity
+  uploadId: 686358

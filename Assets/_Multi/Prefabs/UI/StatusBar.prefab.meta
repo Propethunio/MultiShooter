@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 85083613573847c4caf70b5e9368a4da
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Prefabs/UI/StatusBar.prefab
+  uploadId: 686358

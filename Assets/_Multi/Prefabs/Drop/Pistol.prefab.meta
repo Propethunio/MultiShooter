@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 04dd89b90de92864e9a7b4998c548787
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Prefabs/Drop/Pistol.prefab
+  uploadId: 686358

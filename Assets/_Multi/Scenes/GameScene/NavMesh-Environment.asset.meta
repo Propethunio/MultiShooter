@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3c19d83d3aa4f954f863f820e0f9be55
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 23800000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Scenes/GameScene/NavMesh-Environment.asset
+  uploadId: 686358

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7a0619b1d67052049bc7bac3f7a229e3
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Prefabs/Drop/Medkit.prefab
+  uploadId: 686358

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: dc08e5b8ab4d5e34f84f092257dad100
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Prefabs/CharacterParts/RightHandWeapons.prefab
+  uploadId: 686358

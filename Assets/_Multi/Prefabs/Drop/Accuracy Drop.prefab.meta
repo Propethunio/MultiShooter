@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 51b0f18bb9036b74893715dc8789518b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Prefabs/Drop/Accuracy
+    Drop.prefab
+  uploadId: 686358

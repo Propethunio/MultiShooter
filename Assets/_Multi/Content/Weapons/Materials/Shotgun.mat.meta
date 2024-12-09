@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4692fb53b1767bf4a8d7039f831a5795
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Content/Weapons/Materials/Shotgun.mat
+  uploadId: 686358

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 766fd3ff04aab4745a764d33daac86fa
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Content/Characters/Character
+    (Enemy)/Materials/M_Armature_Arms.mat
+  uploadId: 686358

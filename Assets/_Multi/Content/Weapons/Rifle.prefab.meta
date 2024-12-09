@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 1ffbfe33a76317e40b89b8d4e4486dea
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Content/Weapons/Rifle.prefab
+  uploadId: 686358

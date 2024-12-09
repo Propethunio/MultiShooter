@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7688d36ee4f1c3f46be3f54b8d0ef562
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Prefabs/Drop/Shotgun.prefab
+  uploadId: 686358

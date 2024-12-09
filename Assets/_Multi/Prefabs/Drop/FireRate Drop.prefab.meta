@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6e293b9032724a04b981054b87c01d08
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Prefabs/Drop/FireRate
+    Drop.prefab
+  uploadId: 686358

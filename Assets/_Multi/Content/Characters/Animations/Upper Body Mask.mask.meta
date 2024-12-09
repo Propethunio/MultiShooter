@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 3d653194fbe129e45b5d3a53a090dcc9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 31900000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 264802
+  packageName: Multiplayer Top-Down Shooter Template (Netcode, Lobby, Relay)
+  packageVersion: 1.0.4
+  assetPath: Assets/HEAVYART/Top-Down Shooter Template (Netcode, Lobby, Relay)/Content/Characters/Animations/Upper
+    Body Mask.mask
+  uploadId: 686358

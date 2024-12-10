@@ -1,13 +1,18 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "InstantHeal", menuName = "Modifier Container/Instant Heal")]
-public class InstantHealContainer : ModifierContainerBase {
+namespace HEAVYART.TopDownShooter.Netcode
+{
+    [CreateAssetMenu(fileName = "InstantHeal", menuName = "Modifier Container/Instant Heal")]
+    public class InstantHealContainer : ModifierContainerBase
+    {
+        public float health;
 
-    public float health;
-
-    public override ModifierBase GetConfig() {
-        return new InstantHeal() {
-            health = health
-        };
+        public override ModifierBase GetConfig()
+        {
+            return new InstantHeal()
+            {
+                health = health
+            };
+        }
     }
 }

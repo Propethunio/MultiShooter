@@ -1,23 +1,28 @@
 using Unity.Netcode;
 
-public class ActiveModifierData {
+namespace HEAVYART.TopDownShooter.Netcode
+{
+    public class ActiveModifierData
+    {
+        public double startTime;
+        public double lastUpdateTime;
+        public double endTime;
 
-    public double startTime;
-    public double lastUpdateTime;
-    public double endTime;
+        public ulong ownerID;
 
-    public ulong ownerID;
+        public ModifierBase modifier;
 
-    public ModifierBase modifier;
+        public float GetCurrentProgress()
+        {
+            double duration = endTime - startTime;
+            double timePassed = NetworkManager.Singleton.ServerTime.Time - startTime;
 
-    public float GetCurrentProgress() {
-        double duration = endTime - startTime;
-        double timePassed = NetworkManager.Singleton.ServerTime.Time - startTime;
+            return (float)(timePassed / duration);
+        }
 
-        return (float)(timePassed / duration);
-    }
-
-    public void PrepareToRemove() {
-        endTime = 0;
+        public void PrepareToRemove()
+        {
+            endTime = 0;
+        }
     }
 }

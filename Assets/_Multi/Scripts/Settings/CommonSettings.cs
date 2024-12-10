@@ -1,11 +1,19 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class CommonSettings : MonoBehaviour {
+namespace HEAVYART.TopDownShooter.Netcode
+{
+    public class CommonSettings : MonoBehaviour
+    {
+        public int targetFPS = 60;
 
-    public int targetFPS = 60;
-    public string projectVersion;
+        //Used to split players between different versions of product
+        public string projectVersion;
 
-    void Start() {
-        Application.targetFrameRate = targetFPS;
+        void Start()
+        {
+            Application.targetFrameRate = targetFPS;
+        }
     }
 }

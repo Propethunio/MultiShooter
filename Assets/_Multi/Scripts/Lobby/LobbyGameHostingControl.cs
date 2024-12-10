@@ -13,54 +13,61 @@ using System.Threading.Tasks;
 using System;
 using Unity.Services.Core;
 
-public class LobbyGameHostingControl {
+namespace HEAVYART.TopDownShooter.Netcode
+{
+    public class LobbyGameHostingControl
+    {
+        private LobbyDataControl dataControl;
+        private UnityTransport unityTransport;
 
-    private LobbyDataControl dataControl;
-    private UnityTransport unityTransport;
+        public event Action OnRelayAllocationError;
 
-    public event Action OnRelayAllocationError;
+        public List<string> availableRegions { get; private set; } = new List<string>();
 
-    public List<string> availableRegions { get; private set; } = new List<string>();
-
-    public LobbyGameHostingControl(LobbyDataControl dataControl, UnityTransport unityTransport) {
-        this.dataControl = dataControl;
-        this.unityTransport = unityTransport;
-        UpdateRegions();
-    }
-
-    public async Task HostGame(int playersCount) {
-        string selectedRegion = PlayerDataKeeper.selectedRegion;
-        string joinCode;
-
-        try {
-            //Allocate game session in Relay service
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(playersCount, selectedRegion);
-
-            //Get join code for other players to connect this game
-            joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-
-            //Link current network client to allocated game
-            unityTransport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
-        } catch(Exception e) {
-            Debug.LogError(e);
-            OnRelayAllocationError?.Invoke();
-            return;
+        public LobbyGameHostingControl(LobbyDataControl dataControl, UnityTransport unityTransport)
+        {
+            this.dataControl = dataControl;
+            this.unityTransport = unityTransport;
+            UpdateRegions();
         }
 
-        //Start game session
-        NetworkManager.Singleton.StartHost();
+        public async Task HostGame(int playersCount)
+        {
+            string selectedRegion = PlayerDataKeeper.selectedRegion;
+            string joinCode;
 
-        //Load game scene
-        SceneLoadManager.Instance.LoadNetworkScene(PlayerDataKeeper.selectedScene);
+            try
+            {
+                //Allocate game session in Relay service
+                Allocation allocation = await RelayService.Instance.CreateAllocationAsync(playersCount, selectedRegion);
 
-        //Make sure host is on game scene before we allow other users to connect
-        int delayBeforePublishingJoinCode = 1000;
-        await Task.Delay(delayBeforePublishingJoinCode);
+                //Get join code for other players to connect this game
+                joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-        //Store join code in lobby
-        UpdateLobbyOptions options = new UpdateLobbyOptions();
-        options.Data = new Dictionary<string, DataObject>()
-    {
+                //Link current network client to allocated game
+                unityTransport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                OnRelayAllocationError?.Invoke();
+                return;
+            }
+
+            //Start game session
+            NetworkManager.Singleton.StartHost();
+
+            //Load game scene
+            SceneLoadManager.Instance.LoadNetworkScene(PlayerDataKeeper.selectedScene);
+
+            //Make sure host is on game scene before we allow other users to connect
+            int delayBeforePublishingJoinCode = 1000;
+            await Task.Delay(delayBeforePublishingJoinCode);
+
+            //Store join code in lobby
+            UpdateLobbyOptions options = new UpdateLobbyOptions();
+            options.Data = new Dictionary<string, DataObject>()
+        {
             {
               "joinCode", new DataObject(
               visibility: DataObject.VisibilityOptions.Member,
@@ -68,62 +75,70 @@ public class LobbyGameHostingControl {
             }
         };
 
-        //Send join code
-        dataControl.currentLobby = await LobbyService.Instance.UpdateLobbyAsync(dataControl.currentLobby.Id, options);
-    }
-
-    public async void JoinHostedGame() {
-        //Get join code from lobby
-        string joinCode = dataControl.currentLobby.Data["joinCode"].Value;
-
-        try {
-            //Find and join game session
-            JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-
-            //Link current network client to allocated game
-            unityTransport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
-        } catch(Exception e) {
-            Debug.LogError(e);
-            OnRelayAllocationError?.Invoke();
-            return;
+            //Send join code
+            dataControl.currentLobby = await LobbyService.Instance.UpdateLobbyAsync(dataControl.currentLobby.Id, options);
         }
 
-        //Join game session as client
-        NetworkManager.Singleton.StartClient();
+        public async void JoinHostedGame()
+        {
+            //Get join code from lobby
+            string joinCode = dataControl.currentLobby.Data["joinCode"].Value;
 
-        //In this case we don't load scene manually.
-        //Server automatically synchronizes active scene with all connected clients instead.
-        SceneLoadManager.Instance.SubscribeOnNetworkSceneUpdates();
-    }
+            try
+            {
+                //Find and join game session
+                JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-    private async void UpdateRegions() {
-        //Update regions once in few days
-        if(PlayerDataKeeper.lastRegionsUpdateTime + new TimeSpan(SettingsManager.Instance.lobby.regionsUpdateRateHours, 0, 0) > DateTime.Now) {
-            availableRegions = PlayerDataKeeper.availableRegions;
-            return;
+                //Link current network client to allocated game
+                unityTransport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                OnRelayAllocationError?.Invoke();
+                return;
+            }
+
+            //Join game session as client
+            NetworkManager.Singleton.StartClient();
+
+            //In this case we don't load scene manually.
+            //Server automatically synchronizes active scene with all connected clients instead.
+            SceneLoadManager.Instance.SubscribeOnNetworkSceneUpdates();
         }
 
-        int fixedDeltaTime = (int)(Time.fixedDeltaTime * 1000);
+        private async void UpdateRegions()
+        {
+            //Update regions once in few days
+            if (PlayerDataKeeper.lastRegionsUpdateTime + new TimeSpan(SettingsManager.Instance.lobby.regionsUpdateRateHours, 0, 0) > DateTime.Now)
+            {
+                availableRegions = PlayerDataKeeper.availableRegions;
+                return;
+            }
 
-        //Wait for initialization
-        while(UnityServices.State != ServicesInitializationState.Initialized)
-            await Task.Delay(fixedDeltaTime);
+            int fixedDeltaTime = (int)(Time.fixedDeltaTime * 1000);
 
-        //Wait for sign in
-        while(AuthenticationService.Instance.IsSignedIn == false)
-            await Task.Delay(fixedDeltaTime);
+            //Wait for initialization
+            while (UnityServices.State != ServicesInitializationState.Initialized)
+                await Task.Delay(fixedDeltaTime);
 
-        //Get regions
-        var regionSearchResult = await QosService.Instance.GetSortedQosResultsAsync("relay", null);
+            //Wait for sign in
+            while (AuthenticationService.Instance.IsSignedIn == false)
+                await Task.Delay(fixedDeltaTime);
 
-        foreach(var result in regionSearchResult) {
-            Debug.Log("Add region: " + result.Region);
-            availableRegions.Add(result.Region);
+            //Get regions
+            var regionSearchResult = await QosService.Instance.GetSortedQosResultsAsync("relay", null);
+
+            foreach (var result in regionSearchResult)
+            {
+                Debug.Log("Add region: " + result.Region);
+                availableRegions.Add(result.Region);
+            }
+
+            //Save regions
+            PlayerDataKeeper.availableRegions = availableRegions;
+            PlayerDataKeeper.selectedRegion = availableRegions[0];
+            PlayerDataKeeper.lastRegionsUpdateTime = DateTime.Now;
         }
-
-        //Save regions
-        PlayerDataKeeper.availableRegions = availableRegions;
-        PlayerDataKeeper.selectedRegion = availableRegions[0];
-        PlayerDataKeeper.lastRegionsUpdateTime = DateTime.Now;
     }
 }

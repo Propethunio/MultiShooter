@@ -1,11 +1,18 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class BoneAngleAdjuster : MonoBehaviour {
+namespace HEAVYART.TopDownShooter.Netcode
+{
+    public class BoneAngleAdjuster : MonoBehaviour
+    {
+        public Vector3 offset;
 
-    public Vector3 offset;
-
-    void LateUpdate() {
-        if(offset != Vector3.zero)
-            transform.localRotation *= Quaternion.Euler(offset);
+        // Update is called once per frame
+        void LateUpdate()
+        {
+            if (offset != Vector3.zero)
+                transform.localRotation *= Quaternion.Euler(offset);
+        }
     }
 }

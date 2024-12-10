@@ -1,25 +1,34 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-[Serializable]
-public class InstantHeal : InstantModifier {
+namespace HEAVYART.TopDownShooter.Netcode
+{
+    [Serializable]
+    public class InstantHeal : InstantModifier
+    {
+        public float health;
 
-    public float health;
+        public InstantHeal()
+        {
+            type = GetType().Name;
+        }
 
-    public InstantHeal() {
-        type = GetType().Name;
-    }
+        protected override void SerializeModifier()
+        {
+            object[] outputData = new object[] { health };
 
-    protected override void SerializeModifier() {
-        object[] outputData = new object[] { health };
+            serializedData = Newtonsoft.Json.JsonConvert.SerializeObject(outputData);
+        }
 
-        serializedData = Newtonsoft.Json.JsonConvert.SerializeObject(outputData);
-    }
+        protected override ModifierBase DeserializeModifier(string inputData)
+        {
+            object[] data = Newtonsoft.Json.JsonConvert.DeserializeObject<object[]>(inputData);
 
-    protected override ModifierBase DeserializeModifier(string inputData) {
-        object[] data = Newtonsoft.Json.JsonConvert.DeserializeObject<object[]>(inputData);
+            health = Convert.ToSingle(data[0]);
 
-        health = Convert.ToSingle(data[0]);
-
-        return this;
+            return this;
+        }
     }
 }

@@ -1,9 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AISettings : MonoBehaviour {
+namespace HEAVYART.TopDownShooter.Netcode
+{
+    public class AISettings : MonoBehaviour
+    {
+        public List<AIConfig> configs = new List<AIConfig>();
 
-    public List<AIConfig> configs = new List<AIConfig>();
-
-    public ulong defaultOwnerID => 1000;
+        public ulong defaultOwnerID => 1000;
+    }
 }

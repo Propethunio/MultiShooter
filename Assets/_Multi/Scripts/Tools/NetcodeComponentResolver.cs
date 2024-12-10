@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,17 +9,22 @@ using UnityEngine;
 //Resolver will remove NetworkObject component on disable event.
 //For more details check NetcodeComponentResolverEditor.cs
 
-public class NetcodeComponentResolver : MonoBehaviour {
+namespace HEAVYART.TopDownShooter.Netcode
+{
+    public class NetcodeComponentResolver : MonoBehaviour
+    {
+        private void Start()
+        {
+            if (GetComponent<NetworkObject>() != null)
+            {
+                string errorLog = $"{name} prefab saved incorrectly.\n"
+                                + "Please turn off play mode, select prefab and deselect it.\n" +
+                                  "Resolver will remove NetworkObject component on disable event.";
 
-    private void Start() {
-        if(GetComponent<NetworkObject>() != null) {
-            string errorLog = $"{name} prefab saved incorrectly.\n"
-                            + "Please turn off play mode, select prefab and deselect it.\n" +
-                              "Resolver will remove NetworkObject component on disable event.";
-
-            Debug.LogError(errorLog, gameObject);
+                Debug.LogError(errorLog, gameObject);
+            }
         }
-    }
 
-    void FixedUpdate() { }
+        void FixedUpdate() { }
+    }
 }

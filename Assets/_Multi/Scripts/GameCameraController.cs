@@ -11,7 +11,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         private Vector3 movementVelocity = Vector3.zero;
         private bool isActivated = false;
 
-        void FixedUpdate()
+        void LateUpdate()
         {
             if (GameManager.Instance.gameState != GameState.ActiveGame) return;
 

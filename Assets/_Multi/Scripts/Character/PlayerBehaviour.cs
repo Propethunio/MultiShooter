@@ -4,15 +4,14 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace HEAVYART.TopDownShooter.Netcode
-{
-    public class PlayerBehaviour : NetworkBehaviour
-    {
+namespace HEAVYART.TopDownShooter.Netcode {
+    public class PlayerBehaviour : NetworkBehaviour {
+
         private float movementSpeed = 5;
         private float smoothMovementTime = 0.1f;
 
         private WeaponControlSystem weaponControlSystem;
-        private ShooterInputControls inputActions;
+        [HideInInspector] public ShooterInputControls inputActions;
         private HealthController healthController;
         private ModifiersControlSystem modifiersControlSystem;
         private RigidbodyCharacterController rigidbodyCharacterController;
@@ -21,18 +20,15 @@ namespace HEAVYART.TopDownShooter.Netcode
         private Camera mainCamera;
         private Plane plane;
 
-        private bool isMobile = false;
         private Vector3 movementVelocity = Vector3.zero;
         private Vector3 currentMovementInput;
 
-        private void Awake()
-        {
+        private void Awake() {
             //Register spawned player object (bots need it to find player)
             GameManager.Instance.userControl.AddPlayerObject(NetworkObject);
         }
 
-        private void Start()
-        {
+        private void Start() {
             //Basic components
             weaponControlSystem = GetComponent<WeaponControlSystem>();
             healthController = GetComponent<HealthController>();
@@ -51,52 +47,41 @@ namespace HEAVYART.TopDownShooter.Netcode
 
             //Health
             healthController.Initialize(config.health);
-            healthController.OnDeath += () =>
-            {
+            healthController.OnDeath += () => {
                 GetComponent<CharacterEffectsController>().RunDestroyScenario(true);
 
-                if (IsOwner == true) GameManager.Instance.UI.ShowEndOfGamePopup();
+                if(IsOwner == true) GameManager.Instance.UI.ShowEndOfGamePopup();
             };
 
             //Inputs
             inputActions = new ShooterInputControls();
-            inputActions.Player.Look.Enable();
-            inputActions.Player.Move.Enable();
-            inputActions.Player.Fire.Enable();
+            inputActions.Player.Enable();
 
             movementSpeed = config.movementSpeed;
-
-            isMobile = Application.isMobilePlatform;
-
             gameObject.name = "Player: " + identityControl.spawnParameters.Value.name;
+            rigidbodyCharacterController.Init();
         }
 
-        void FixedUpdate()
-        {
-            if (IsOwner == false) return;
+        void FixedUpdate() {
+            if(IsOwner == false) return;
 
             //Stop any movement when game ends
-            if (GameManager.Instance.gameState == GameState.GameIsOver) rigidbodyCharacterController.Stop();
+            if(GameManager.Instance.gameState == GameState.GameIsOver) rigidbodyCharacterController.Stop();
 
             //Stop any movement when player is dead
-            if (healthController.isAlive == false) rigidbodyCharacterController.Stop();
+            if(healthController.isAlive == false) rigidbodyCharacterController.Stop();
 
             //Wait for game to start
-            if (GameManager.Instance.gameState != GameState.ActiveGame) return;
+            if(GameManager.Instance.gameState != GameState.ActiveGame) return;
 
-            if (isMobile)
-                HandleMobileInput();
-            else
-                HandleKeyboardInput();
+            HandleKeyboardInput();
         }
 
-        private void HandleKeyboardInput()
-        {
+        private void HandleKeyboardInput() {
             Vector2 mouseInput = inputActions.Player.Look.ReadValue<Vector2>();
             Ray ray = mainCamera.ScreenPointToRay(mouseInput);
 
-            if (plane.Raycast(ray, out float enter))
-            {
+            if(plane.Raycast(ray, out float enter)) {
                 Vector3 hitPoint = ray.GetPoint(enter);
                 Vector3 lookDirection = hitPoint - transform.position;
                 lookDirection.y = 0;
@@ -105,7 +90,7 @@ namespace HEAVYART.TopDownShooter.Netcode
                 weaponControlSystem.lineOfSightTransform.localRotation = Quaternion.LookRotation(lookDirection);
 
                 //Draw line of sight direction
-                if (Application.isEditor)
+                if(Application.isEditor)
                     Debug.DrawRay(weaponControlSystem.lineOfSightTransform.position, weaponControlSystem.lineOfSightTransform.forward, Color.red);
             }
 
@@ -117,34 +102,12 @@ namespace HEAVYART.TopDownShooter.Netcode
             float currentSpeed = modifiersControlSystem.CalculateSpeedMultiplier() * movementSpeed;
 
             //Move (using physics)
-            rigidbodyCharacterController.Move(new Vector3(currentMovementInput.x, 0, currentMovementInput.y), currentSpeed);
+
+            rigidbodyCharacterController.Move(positionInput != Vector2.zero);
 
             //Fire weapon
-            if (inputActions.Player.Fire.inProgress)
+            if(inputActions.Player.Fire.inProgress)
                 weaponControlSystem.Fire();
-        }
-
-        private void HandleMobileInput()
-        {
-            if (inputActions.Player.Look.inProgress)
-            {
-                //Screen joystick inputs
-                Vector2 lookJoystickInput = inputActions.Player.Look.ReadValue<Vector2>();
-                weaponControlSystem.lineOfSightTransform.localRotation = Quaternion.LookRotation(new Vector3(lookJoystickInput.x, 0, lookJoystickInput.y));
-
-                //Fire weapon
-                weaponControlSystem.Fire();
-            }
-
-            //Screen joystick inputs
-            Vector2 moveJoystickInput = inputActions.Player.Move.ReadValue<Vector2>().normalized;
-            currentMovementInput = Vector3.SmoothDamp(currentMovementInput, moveJoystickInput, ref movementVelocity, smoothMovementTime);
-
-            //Update movement speed according to currently active modifiers
-            float currentSpeed = modifiersControlSystem.CalculateSpeedMultiplier() * movementSpeed;
-
-            //Move (using physics)
-            rigidbodyCharacterController.Move(new Vector3(currentMovementInput.x, 0, currentMovementInput.y), currentSpeed);
         }
     }
 }

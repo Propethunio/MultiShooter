@@ -109,7 +109,7 @@ namespace HEAVYART.TopDownShooter.Netcode
                 float currentSpeed = modifiersControlSystem.CalculateSpeedMultiplier() * movementSpeed;
 
                 //Move (using physics)
-                rigidbodyCharacterController.Move(currentMovementInput, currentSpeed);
+                //rigidbodyCharacterController.Move(currentMovementInput, currentSpeed);
 
                 //Fire weapon
                 if (lookDirection.magnitude < distanceToOpenFire)

@@ -36,7 +36,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         public void UpdateHealthBarColor()
         {
-            healthFillImage.color = healthColorGradient.Evaluate(healthStatusSlider.value);
+            //healthFillImage.color = healthColorGradient.Evaluate(healthStatusSlider.value);
         }
 
         public void UpdatePowerUpIndicators(ModifiersControlSystem modifiersControlSystem, bool updateProgress)

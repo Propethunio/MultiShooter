@@ -2,11 +2,30 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static UnityEngine.GraphicsBuffer;
+using UnityEngine.Events;
 
 namespace HEAVYART.TopDownShooter.Netcode {
-    public class RigidbodyCharacterController : NetworkBehaviour {
+    public class PlayerMovement : NetworkBehaviour {
+
+        [System.Serializable]
+        public class Events // Store your events
+{
+            public UnityEvent OnMove, OnJump, OnLand, OnCrouch, OnStopCrouch, OnSprint, OnSpawn, OnSlide, OnStartWallRun, OnStopWallRun,
+                                OnWallBounce, OnStartDash, OnDashing, OnEndDash, OnStartClimb, OnClimbing, OnEndClimb,
+                                OnStartGrapple, OnGrappling, OnStopGrapple, OnGrappleEnabled;
+        }
+
+        public Events events;
+
+        public enum DirectionalJumpMethod // Different methods to determine the jump method to apply
+{
+            None, InputBased, ForwardMovement
+        }
 
         private Vector3 playerScale;
         public Vector3 PlayerScale { get { return playerScale; } }
@@ -16,10 +35,12 @@ namespace HEAVYART.TopDownShooter.Netcode {
         [Min(0.01f)]
         [Tooltip("Max speed the player can reach. Velocity is clamped by this value.")] public float maxSpeedAllowed = 40;
         public Transform orientation;
+        [Tooltip("This is where the parent of your camera should be attached.")]
+        public Transform playerCam;
         [HideInInspector] public bool grounded { get; private set; }
         public LayerMask whatIsGround;
         private PlayerBehaviour playerBehaviour;
-        private ShooterInputControls inputActions;
+        [HideInInspector] public ShooterInputControls inputActions;
         private bool crouching;
         private bool initalized;
         private bool jumping;
@@ -47,15 +68,43 @@ namespace HEAVYART.TopDownShooter.Netcode {
         [Min(0.01f)]
         public float runSpeed, walkSpeed, crouchSpeed, crouchTransitionSpeed;
         private bool allowMoveWhileSliding;
-        private float x;
-        private float y;
+        [HideInInspector] public float x;
+        [HideInInspector] public float y;
         private Rigidbody rb;
+        [Tooltip("Default field of view of your camera"), Range(1, 179)] public float normalFOV;
+        float mousex;
+        float mousey;
+        float sensitivity_x = 4f;
+        float sensitivity_y = 4f;
+        private float desiredX;
+        private float xRotation;
+        [Tooltip("Maximum Vertical Angle for the camera"), Range(20, 90f)]
+        public float maxCameraAngle = 90f;
+        [Tooltip("The higher this value is, the higher you will get to jump."), SerializeField]
+        private float jumpForce = 550f;
+        [Tooltip("Method to apply on jumping when the player is not grounded, related to the directional jump")]
+        public DirectionalJumpMethod directionalJumpMethod;
+        [Tooltip("Force applied on an object in the direction of the directional jump"), SerializeField]
+        private float directionalJumpForce;
+        [Tooltip("Interval between jumping")][Min(.25f), SerializeField] private float jumpCooldown = .25f;
+        public float RoofCheckDistance { get { return roofCheckDistance; } }
+        [SerializeField, Tooltip("Distance to detect a roof. If an obstacle is detected within this distance, the player will not be able to uncrouch")] private float roofCheckDistance = 3.5f;
+
+
+
+
+
+
+
+
 
         void Awake() {
             playerBehaviour = GetComponent<PlayerBehaviour>();
             rb = GetComponent<Rigidbody>();
             rb.freezeRotation = true;
             rb.useGravity = false;
+            inputActions = new ShooterInputControls();
+            inputActions.Player.Enable();
         }
 
         private void Start() {
@@ -71,15 +120,16 @@ namespace HEAVYART.TopDownShooter.Netcode {
             Vector2 moveInput = inputActions.Player.Movement.ReadValue<Vector2>();
             x = moveInput.x;
             y = moveInput.y;
+            mousex = Mouse.current.delta.x.ReadValue();
+            mousey = Mouse.current.delta.y.ReadValue();
         }
 
         public void Init() {
-            inputActions = playerBehaviour.inputActions;
             initalized = true;
         }
 
-        public void Move(bool move) {
-            Debug.Log(grounded);
+        public void Movement(bool move) {
+
             if(!IsPlayerOnSlope() || (IsPlayerOnSlope() && rb.linearVelocity.y < 0)) rb.AddForce(Vector3.down * 30.19f, ForceMode.Acceleration);
 
             if(rb.linearVelocity.magnitude > maxSpeedAllowed) rb.linearVelocity = Vector3.ClampMagnitude(rb.linearVelocity, maxSpeedAllowed);
@@ -116,12 +166,8 @@ namespace HEAVYART.TopDownShooter.Netcode {
 
                 if(rb.linearVelocity.y > 0) rb.AddForce(Vector3.down * 70, ForceMode.Force);
             } else {
-
-
                 rb.AddForce((orientation.transform.forward * y * acceleration * Time.deltaTime * multiplier * multiplierV / multiplier2), ForceMode.Force);
                 rb.AddForce((orientation.transform.right * x * acceleration * Time.deltaTime * multiplier / multiplier2), ForceMode.Force);
-
-                Debug.Log(rb.linearVelocity);
             }
         }
 
@@ -217,10 +263,63 @@ namespace HEAVYART.TopDownShooter.Netcode {
             canCoyote = coyoteTimer > 0 && readyToJump;
         }
 
+        public void Jump() {
+            readyToJump = false;
+            hasJumped = true;
+            cancellingGrounded = false;
+
+            //Add jump forces
+
+            rb.AddForce(Vector3.up * jumpForce * 1.5f, ForceMode.Impulse);
+            rb.AddForce(normalVector * jumpForce * 0.5f, ForceMode.Impulse);
+            // Handle directional jumping
+            if(!grounded && directionalJumpMethod != DirectionalJumpMethod.None) {
+                if(Vector3.Dot(rb.linearVelocity, new Vector3(x, 0, y)) > .5f)
+                    rb.linearVelocity = rb.linearVelocity / 2;
+                if(directionalJumpMethod == DirectionalJumpMethod.InputBased) // Input based method for directional jumping
+                {
+                    rb.AddForce(orientation.right * x * directionalJumpForce, ForceMode.Impulse);
+                    rb.AddForce(orientation.forward * y * directionalJumpForce, ForceMode.Impulse);
+                }
+                if(directionalJumpMethod == DirectionalJumpMethod.ForwardMovement) // Forward Movement method for directional jumping, dependant on orientation
+                    rb.AddForce(orientation.forward * Mathf.Abs(y) * directionalJumpForce, ForceMode.VelocityChange);
+
+                //If jumping while falling, reset y velocity.
+                if(rb.linearVelocity.y < 0.5f)
+                    rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+                else if(rb.linearVelocity.y > 0)
+                    rb.linearVelocity = new Vector3(rb.linearVelocity.x, rb.linearVelocity.y / 2, rb.linearVelocity.z);
+            }
+
+            //SoundManager.Instance.PlaySound(sounds.jumpSFX, 0, 0, false, 0);
+            Invoke(nameof(ResetJump), jumpCooldown);
+        }
+
         private void ResetJump() => readyToJump = true;
 
         private Vector3 GetSlopeDirection() {
             return Vector3.ProjectOnPlane(orientation.forward * y + orientation.right * x, slopeHit.normal).normalized;
+        }
+
+        public void Look() {
+
+            //float sensM = (weaponController.isAiming) ? InputManager.aimingSensitivityMultiplier : 1;
+
+            //Handle the camera movement and look based on the inputs received by the user
+            float mouseX = (mousex * sensitivity_x * Time.fixedDeltaTime);// * sensM;
+            float mouseY = (mousey * sensitivity_y * Time.fixedDeltaTime);// * sensM;
+
+            //Find current look rotation
+            Vector3 rot = playerCam.transform.localRotation.eulerAngles;
+            desiredX = rot.y + mouseX;
+
+            //Rotate, and also make sure we dont over- or under-rotate.
+            xRotation -= mouseY;
+            xRotation = Mathf.Clamp(xRotation, -maxCameraAngle, maxCameraAngle);
+
+            //Perform the rotations on: 
+            playerCam.transform.localRotation = Quaternion.Euler(xRotation, desiredX, 0); // the camera parent
+            orientation.transform.localRotation = Quaternion.Euler(0, desiredX, 0); // the orientation
         }
 
         public void Stop() {

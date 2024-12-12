@@ -16,7 +16,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         private WeaponControlSystem weaponControlSystem;
         private HealthController healthController;
         private ModifiersControlSystem modifiersControlSystem;
-        private RigidbodyCharacterController rigidbodyCharacterController;
+        private PlayerMovement rigidbodyCharacterController;
         private CharacterIdentityControl identityControl;
 
         private float distanceToOpenFire;
@@ -41,7 +41,7 @@ namespace HEAVYART.TopDownShooter.Netcode
             weaponControlSystem = GetComponent<WeaponControlSystem>();
             healthController = GetComponent<HealthController>();
             modifiersControlSystem = GetComponent<ModifiersControlSystem>();
-            rigidbodyCharacterController = GetComponent<RigidbodyCharacterController>();
+            rigidbodyCharacterController = GetComponent<PlayerMovement>();
             identityControl = GetComponent<CharacterIdentityControl>();
 
             //Settings

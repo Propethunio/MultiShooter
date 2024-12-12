@@ -14,7 +14,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
         [HideInInspector] public ShooterInputControls inputActions;
         private HealthController healthController;
         private ModifiersControlSystem modifiersControlSystem;
-        private RigidbodyCharacterController rigidbodyCharacterController;
+        private PlayerMovement rigidbodyCharacterController;
         private CharacterIdentityControl identityControl;
 
         private Camera mainCamera;
@@ -33,13 +33,13 @@ namespace HEAVYART.TopDownShooter.Netcode {
             weaponControlSystem = GetComponent<WeaponControlSystem>();
             healthController = GetComponent<HealthController>();
             modifiersControlSystem = GetComponent<ModifiersControlSystem>();
-            rigidbodyCharacterController = GetComponent<RigidbodyCharacterController>();
+            rigidbodyCharacterController = GetComponent<PlayerMovement>();
             identityControl = GetComponent<CharacterIdentityControl>();
 
             //Camera and aiming
             plane = new Plane(Vector3.up, weaponControlSystem.lineOfSightTransform.localPosition);
-            mainCamera = Camera.main;
-            mainCamera.GetComponent<GameCameraController>().ActivateCameraMovement();
+            //mainCamera = Camera.main;
+            //mainCamera.GetComponent<GameCameraController>().ActivateCameraMovement();
 
             //Settings
             int modelIndex = identityControl.spawnParameters.Value.modelIndex;
@@ -54,8 +54,8 @@ namespace HEAVYART.TopDownShooter.Netcode {
             };
 
             //Inputs
-            inputActions = new ShooterInputControls();
-            inputActions.Player.Enable();
+            //inputActions = new ShooterInputControls();
+            //inputActions.Player.Enable();
 
             movementSpeed = config.movementSpeed;
             gameObject.name = "Player: " + identityControl.spawnParameters.Value.name;
@@ -66,15 +66,15 @@ namespace HEAVYART.TopDownShooter.Netcode {
             if(IsOwner == false) return;
 
             //Stop any movement when game ends
-            if(GameManager.Instance.gameState == GameState.GameIsOver) rigidbodyCharacterController.Stop();
+            //if(GameManager.Instance.gameState == GameState.GameIsOver) rigidbodyCharacterController.Stop();
 
             //Stop any movement when player is dead
-            if(healthController.isAlive == false) rigidbodyCharacterController.Stop();
+            //if(healthController.isAlive == false) rigidbodyCharacterController.Stop();
 
             //Wait for game to start
-            if(GameManager.Instance.gameState != GameState.ActiveGame) return;
+            //if(GameManager.Instance.gameState != GameState.ActiveGame) return;
 
-            HandleKeyboardInput();
+            //HandleKeyboardInput();
         }
 
         private void HandleKeyboardInput() {
@@ -103,7 +103,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
 
             //Move (using physics)
 
-            rigidbodyCharacterController.Move(positionInput != Vector2.zero);
+            //rigidbodyCharacterController.Movement(positionInput != Vector2.zero);
 
             //Fire weapon
             if(inputActions.Player.Fire.inProgress)

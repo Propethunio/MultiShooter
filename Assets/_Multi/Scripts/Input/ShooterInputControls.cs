@@ -37,6 +37,15 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
+                    ""name"": ""ChangeWeapons"",
+                    ""type"": ""Value"",
+                    ""id"": ""e7e9ac43-2a59-4a4c-9f7e-d6b4cfc2dc09"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
                     ""name"": ""Reloading"",
                     ""type"": ""Button"",
                     ""id"": ""fb7059bc-64a9-4597-93e7-443c5f65b364"",
@@ -103,6 +112,15 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
                     ""name"": ""Movement"",
                     ""type"": ""Button"",
                     ""id"": ""be765c2c-aff9-4751-9236-b1c8ae1e9b58"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Firing"",
+                    ""type"": ""Button"",
+                    ""id"": ""3cf44114-4652-4b91-b257-0c99ca7ea3fb"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -219,6 +237,39 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Bumpers"",
+                    ""id"": ""10260d2d-6b91-4295-8aa1-4fa7b9285a7e"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeWeapons"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""607d39a6-c5a8-4428-855b-4e6845fb85f7"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""ChangeWeapons"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""99b7dda4-0132-4af8-9fbf-e89fa5615de0"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""ChangeWeapons"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 },
                 {
                     ""name"": """",
@@ -442,6 +493,28 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""80cbd173-986a-4eb5-a52e-9e294ac2e492"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Firing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b3a10e29-2f70-43dc-a927-50c632c149c6"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Firing"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""c9cc8664-ae2b-4e95-9bd9-817d727b0326"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -531,6 +604,7 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+        m_Player_ChangeWeapons = m_Player.FindAction("ChangeWeapons", throwIfNotFound: true);
         m_Player_Reloading = m_Player.FindAction("Reloading", throwIfNotFound: true);
         m_Player_Jumping = m_Player.FindAction("Jumping", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
@@ -539,6 +613,7 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
         m_Player_Scrolling = m_Player.FindAction("Scrolling", throwIfNotFound: true);
         m_Player_Aiming = m_Player.FindAction("Aiming", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
+        m_Player_Firing = m_Player.FindAction("Firing", throwIfNotFound: true);
     }
 
     ~@ShooterInputControls()
@@ -606,6 +681,7 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
+    private readonly InputAction m_Player_ChangeWeapons;
     private readonly InputAction m_Player_Reloading;
     private readonly InputAction m_Player_Jumping;
     private readonly InputAction m_Player_Look;
@@ -614,11 +690,13 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Scrolling;
     private readonly InputAction m_Player_Aiming;
     private readonly InputAction m_Player_Movement;
+    private readonly InputAction m_Player_Firing;
     public struct PlayerActions
     {
         private @ShooterInputControls m_Wrapper;
         public PlayerActions(@ShooterInputControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
+        public InputAction @ChangeWeapons => m_Wrapper.m_Player_ChangeWeapons;
         public InputAction @Reloading => m_Wrapper.m_Player_Reloading;
         public InputAction @Jumping => m_Wrapper.m_Player_Jumping;
         public InputAction @Look => m_Wrapper.m_Player_Look;
@@ -627,6 +705,7 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
         public InputAction @Scrolling => m_Wrapper.m_Player_Scrolling;
         public InputAction @Aiming => m_Wrapper.m_Player_Aiming;
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
+        public InputAction @Firing => m_Wrapper.m_Player_Firing;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -639,6 +718,9 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
+            @ChangeWeapons.started += instance.OnChangeWeapons;
+            @ChangeWeapons.performed += instance.OnChangeWeapons;
+            @ChangeWeapons.canceled += instance.OnChangeWeapons;
             @Reloading.started += instance.OnReloading;
             @Reloading.performed += instance.OnReloading;
             @Reloading.canceled += instance.OnReloading;
@@ -663,6 +745,9 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
             @Movement.started += instance.OnMovement;
             @Movement.performed += instance.OnMovement;
             @Movement.canceled += instance.OnMovement;
+            @Firing.started += instance.OnFiring;
+            @Firing.performed += instance.OnFiring;
+            @Firing.canceled += instance.OnFiring;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -670,6 +755,9 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
+            @ChangeWeapons.started -= instance.OnChangeWeapons;
+            @ChangeWeapons.performed -= instance.OnChangeWeapons;
+            @ChangeWeapons.canceled -= instance.OnChangeWeapons;
             @Reloading.started -= instance.OnReloading;
             @Reloading.performed -= instance.OnReloading;
             @Reloading.canceled -= instance.OnReloading;
@@ -694,6 +782,9 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
             @Movement.started -= instance.OnMovement;
             @Movement.performed -= instance.OnMovement;
             @Movement.canceled -= instance.OnMovement;
+            @Firing.started -= instance.OnFiring;
+            @Firing.performed -= instance.OnFiring;
+            @Firing.canceled -= instance.OnFiring;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -759,6 +850,7 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
+        void OnChangeWeapons(InputAction.CallbackContext context);
         void OnReloading(InputAction.CallbackContext context);
         void OnJumping(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
@@ -767,5 +859,6 @@ public partial class @ShooterInputControls: IInputActionCollection2, IDisposable
         void OnScrolling(InputAction.CallbackContext context);
         void OnAiming(InputAction.CallbackContext context);
         void OnMovement(InputAction.CallbackContext context);
+        void OnFiring(InputAction.CallbackContext context);
     }
 }

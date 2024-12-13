@@ -11,7 +11,6 @@ namespace cowsins {
         private Transform head;
 
         private void Start() {
-            Debug.Log(IsOwner);
             if(IsOwner) {
                 gameObject.SetActive(true);
             } else {
@@ -20,8 +19,8 @@ namespace cowsins {
         }
 
         private void Update() {
-            transform.position = head.transform.position;
-            playerModel.transform.localRotation = Quaternion.Euler(0, transform.localEulerAngles.y, 0);
+            transform.position = head.transform.position - new Vector3(0f, -0.1f, 0f);
+            playerModel.transform.localRotation = Quaternion.Euler(transform.localEulerAngles);
         }
     }
 }

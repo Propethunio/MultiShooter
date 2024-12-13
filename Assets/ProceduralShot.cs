@@ -1,6 +1,6 @@
 using UnityEngine;
 namespace cowsins {
-    public class ProceduralShot : MonoBehaviour {/*
+    public class ProceduralShot : MonoBehaviour {
         [SerializeField] private WeaponController weapon;
 
         private ProceduralShot_SO pattern;
@@ -18,9 +18,8 @@ namespace cowsins {
 
         private void Awake() => _instance = this;
 
-        private void Update()
-        {
-            if (!shoot || timer >= 1) return; // Return if we are not shooting
+        private void Update() {
+            if(!shoot || timer >= 1) return; // Return if we are not shooting
 
             timer += Time.deltaTime * pattern.playSpeed; // Increase the timer
 
@@ -45,11 +44,10 @@ namespace cowsins {
         /// <summary>
         /// Start a Procedural Shot motion given a ProceduralShot_SO ( Procedural Shot Pattern )
         /// </summary>
-        public void Shoot(ProceduralShot_SO shot)
-        {
+        public void Shoot(ProceduralShot_SO shot) {
             pattern = shot;
             timer = 0;
             shoot = true;
-        }*/
+        }
     }
 }

@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.GraphicsBuffer;
 using UnityEngine.Events;
+using cowsins;
 
 namespace HEAVYART.TopDownShooter.Netcode {
     public class PlayerMovement : NetworkBehaviour {
@@ -26,6 +27,10 @@ namespace HEAVYART.TopDownShooter.Netcode {
 {
             None, InputBased, ForwardMovement
         }
+
+        [HideInInspector] public WeaponController weaponController;
+
+        public float aimingSensitivityMultiplier = .5f;
 
         private Vector3 playerScale;
         public Vector3 PlayerScale { get { return playerScale; } }
@@ -72,14 +77,14 @@ namespace HEAVYART.TopDownShooter.Netcode {
         [HideInInspector] public float y;
         private Rigidbody rb;
         [Tooltip("Default field of view of your camera"), Range(1, 179)] public float normalFOV;
-        float mousex;
-        float mousey;
+        [HideInInspector] public float mousex;
+        [HideInInspector] public float mousey;
         float sensitivity_x = 4f;
         float sensitivity_y = 4f;
         private float desiredX;
         private float xRotation;
-        [Tooltip("Maximum Vertical Angle for the camera"), Range(20, 90f)]
-        public float maxCameraAngle = 90f;
+        [Tooltip("Maximum Vertical Angle for the camera"), Range(20, 89f)]
+        public float maxCameraAngle = 89f;
         [Tooltip("The higher this value is, the higher you will get to jump."), SerializeField]
         private float jumpForce = 550f;
         [Tooltip("Method to apply on jumping when the player is not grounded, related to the directional jump")]
@@ -89,7 +94,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
         [Tooltip("Interval between jumping")][Min(.25f), SerializeField] private float jumpCooldown = .25f;
         public float RoofCheckDistance { get { return roofCheckDistance; } }
         [SerializeField, Tooltip("Distance to detect a roof. If an obstacle is detected within this distance, the player will not be able to uncrouch")] private float roofCheckDistance = 3.5f;
-
+        [Tooltip("Fade Speed - Start Transition for the field of view")] public float fadeInFOVAmount;
 
 
 
@@ -105,6 +110,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
             rb.useGravity = false;
             inputActions = new ShooterInputControls();
             inputActions.Player.Enable();
+            weaponController = GetComponent<WeaponController>();
         }
 
         private void Start() {
@@ -149,7 +155,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
             float multiplier = (!grounded) ? controlAirborne : 1;
             float multiplierV = (!grounded) ? controlAirborne : 1;
 
-            float multiplier2 = /*(weaponController.weapon != null) ? weaponController.weapon.weightMultiplier :*/ 1;
+            float multiplier2 = (weaponController.weapon != null) ? weaponController.weapon.weightMultiplier : 1;
 
             if(rb.linearVelocity.sqrMagnitude < .02f) rb.linearVelocity = Vector3.zero;
 
@@ -303,7 +309,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
 
         public void Look() {
 
-            //float sensM = (weaponController.isAiming) ? InputManager.aimingSensitivityMultiplier : 1;
+            float sensM = (weaponController.isAiming) ? aimingSensitivityMultiplier : 1;
 
             //Handle the camera movement and look based on the inputs received by the user
             float mouseX = (mousex * sensitivity_x * Time.fixedDeltaTime);// * sensM;

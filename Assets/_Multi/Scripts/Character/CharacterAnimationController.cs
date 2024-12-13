@@ -18,7 +18,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         public float layerSwitchSmoothness = 10f;
 
         private Transform targetingTransform;
-        private Transform lineOfSightTransform;
+        public Transform lineOfSightTransform;
 
         private Transform spine;
         private Transform chest;
@@ -69,37 +69,13 @@ namespace HEAVYART.TopDownShooter.Netcode
             //Set movement animation speed
             animator.SetFloat("MovementSpeedMultiplier", modifiersControlSystem.CalculateSpeedMultiplier());
 
-            Quaternion targetRotation;
+            Quaternion targetRotation = Quaternion.LookRotation(FindClosestDirection(lineOfSightTransform.forward));
 
-            if (movementSpeed > 0.01f) // If character moves
+            if(movementSpeed > 0.05f) // If character moves
             {
                 bool isOppositeDirections = Vector3.Dot(movementDirection, lineOfSightTransform.forward) < 0;
 
-                //Set movement direction
                 animator.SetFloat("Movement", isOppositeDirections ? -1 : 1);
-
-                targetRotation = Quaternion.LookRotation(movementDirection);
-
-                //Rotate body in direction of aiming (a little bit). Fixes Quaternion.Slerp rotation in wrong direction.
-
-                //Calculate additional angle (if character moves forward)
-                float additionalLineOfSightAngle = Mathf.DeltaAngle(0, Quaternion.FromToRotation(movementDirection, lineOfSightTransform.forward).eulerAngles.y);
-
-                if (isOppositeDirections)
-                {
-                    //Calculate additional angle if character moves backwards
-                    targetRotation *= Quaternion.Euler(0, -180, 0);
-                    additionalLineOfSightAngle = Mathf.DeltaAngle(0, Quaternion.FromToRotation(movementDirection, -lineOfSightTransform.forward).eulerAngles.y);
-                }
-
-                //Apply additional rotation
-                float lineOfSightRotationFactor = 0.1f;
-                targetRotation *= Quaternion.Euler(0, additionalLineOfSightAngle * lineOfSightRotationFactor, 0);
-            }
-            else // If it stands
-            {
-                //Rotate body (legs) to closest direction
-                targetRotation = Quaternion.LookRotation(FindClosestDirection(lineOfSightTransform.forward));
             }
 
             animator.transform.rotation = Quaternion.Slerp(animator.transform.rotation, targetRotation, rotationSmoothness * Time.deltaTime);

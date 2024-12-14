@@ -88,10 +88,6 @@ namespace cowsins {
                         }
                     }
 
-                    if(playerMovement != null) {
-                        CamShake.instance.ExplosionShake(Vector3.Distance(CamShake.instance.gameObject.transform.position, transform.position));
-                    }
-
                     if(rigidbody != null && collider != this) {
                         rigidbody.AddExplosionForce(explosionForce, transform.position, explosionRadius, 5, ForceMode.Force);
                     }

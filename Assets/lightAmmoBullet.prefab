@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: lightAmmoBullet
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 49ce2a47fef726a44b78750955854315, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -88,15 +92,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 49ce2a47fef726a44b78750955854315, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 49ce2a47fef726a44b78750955854315, type: 3}
       propertyPath: m_LocalScale.y
-      value: 1
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 49ce2a47fef726a44b78750955854315, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 49ce2a47fef726a44b78750955854315, type: 3}
       propertyPath: m_LocalPosition.x
@@ -142,6 +146,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: lightAmmoBullet
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 49ce2a47fef726a44b78750955854315, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -5754084199372789682, guid: 49ce2a47fef726a44b78750955854315, type: 3}
     - {fileID: -7511558181221131132, guid: 49ce2a47fef726a44b78750955854315, type: 3}
@@ -163,6 +171,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 49ce2a47fef726a44b78750955854315, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9057930821816555724}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 49ce2a47fef726a44b78750955854315, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -352620472958135458}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 49ce2a47fef726a44b78750955854315, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -6484804460376635256}
   m_SourcePrefab: {fileID: 100100000, guid: 49ce2a47fef726a44b78750955854315, type: 3}
 --- !u!4 &8394973530862425769 stripped
 Transform:
@@ -247,3 +261,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeToDestroy: 5
+--- !u!114 &-352620472958135458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9208523537112681491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1230092312
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &-6484804460376635256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9208523537112681491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9fe2383617dff545b72288f444113de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  xPosition: 1
+  yPosition: 1
+  zPosition: 1
+  xRotation: 1
+  yRotation: 1
+  zRotation: 1
+  positionSmoothingFrames: 0
+  positionExtrapolationFactor: 0
+  rotationInterpolationFactor: 0

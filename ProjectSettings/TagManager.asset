@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Enemy
   - Critical
+  - NoHitLayer
+  - BodyShot
+  - mapUI
   layers:
   - Default
   - TransparentFX
@@ -13,9 +16,9 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
-  - 
-  - 
+  - NoHit
+  - Player
+  - UILoading
   - 
   - 
   - 

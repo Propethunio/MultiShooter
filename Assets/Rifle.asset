@@ -31,7 +31,7 @@ MonoBehaviour:
   explosionForce: 0
   explosionVFX: {fileID: 0}
   continuousFire: 0
-  fireRate: 0.2
+  fireRate: 0.1
   reloadTime: 3.1
   coolSpeed: 0
   cooledPercentageAfterOverheat: 0
@@ -41,13 +41,13 @@ MonoBehaviour:
   ammoCostPerFire: 1
   bulletRange: 100
   timeBetweenShots: 0
-  penetrationAmount: 10
-  penetrationDamageReduction: 0.579
+  penetrationAmount: 6.26
+  penetrationDamageReduction: 0.605
   allowAim: 1
   aimDistance: 0.25
   aimingRotation: {x: 0, y: 0, z: 0}
-  aimingSpeed: 15
-  aimingFOV: 38
+  aimingSpeed: 3
+  aimingFOV: 42
   allowAimingIfReloading: 0
   movementSpeedWhileAiming: 3
   setMovementSpeedWhileAiming: 1
@@ -55,8 +55,8 @@ MonoBehaviour:
   crosshairPreset: {fileID: 2655988077585873504, guid: 032d0baa9508bde42a440a63a83a49e8, type: 2}
   applyBulletSpread: 1
   applyWeight: 1
-  spreadAmount: 0.03
-  aimSpreadAmount: 0
+  spreadAmount: 0.025
+  aimSpreadAmount: 0.01
   weightMultiplier: 1
   applyRecoil: 1
   recoilX:
@@ -143,28 +143,28 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  xRecoilAmount: 2
-  yRecoilAmount: 4
-  recoilRelaxSpeed: 1
-  applyDifferentRecoilOnAiming: 0
-  xRecoilAmountOnAiming: 0
-  yRecoilAmountOnAiming: 0
-  damagePerBullet: 2.8
-  applyDamageReductionBasedOnDistance: 0
-  minimumDistanceToApplyDamageReduction: 0
-  damageReductionMultiplier: 0
+  xRecoilAmount: 3
+  yRecoilAmount: 5
+  recoilRelaxSpeed: 1.5
+  applyDifferentRecoilOnAiming: 1
+  xRecoilAmountOnAiming: 1
+  yRecoilAmountOnAiming: 1
+  damagePerBullet: 27
+  applyDamageReductionBasedOnDistance: 1
+  minimumDistanceToApplyDamageReduction: 35
+  damageReductionMultiplier: 0.85
   criticalDamageMultiplier: 2
   limitedMagazines: 1
   totalMagazines: 10
   showBulletShells: 1
   bulletHoleImpact:
-    defaultImpact: {fileID: 0}
-    groundIMpact: {fileID: 0}
-    grassImpact: {fileID: 0}
-    enemyImpact: {fileID: 0}
-    metalImpact: {fileID: 0}
-    mudImpact: {fileID: 0}
-    woodImpact: {fileID: 0}
+    defaultImpact: {fileID: 2462405574108921655, guid: 66becdd374596ab49b203f051f883e41, type: 3}
+    groundIMpact: {fileID: 2462405574108921655, guid: 66becdd374596ab49b203f051f883e41, type: 3}
+    grassImpact: {fileID: 2462405574108921655, guid: 66becdd374596ab49b203f051f883e41, type: 3}
+    enemyImpact: {fileID: 2462405574108921655, guid: 66becdd374596ab49b203f051f883e41, type: 3}
+    metalImpact: {fileID: 2462405574108921655, guid: 66becdd374596ab49b203f051f883e41, type: 3}
+    mudImpact: {fileID: 2462405574108921655, guid: 66becdd374596ab49b203f051f883e41, type: 3}
+    woodImpact: {fileID: 2462405574108921655, guid: 66becdd374596ab49b203f051f883e41, type: 3}
   muzzleVFX: {fileID: 1336949550903370, guid: f43048b8032cf7d4cad8e8994040a3d4, type: 3}
   bulletGraphics: {fileID: 9208523537112681491, guid: 08f400753ac0b1d41b0cc226c4686ca1, type: 3}
   useProceduralShot: 0
@@ -179,8 +179,8 @@ MonoBehaviour:
     emptyMagShoot: {fileID: 8300000, guid: 727de2e730ffb384c8d23c8783c8b6ee, type: 3}
   pitchVariationFiringSFX: 0.15
   grapplesFromTip: 0
-  camShakeAmount: 0.08
-  camShakeAimMultiplier: 0.8
+  camShakeAmount: 0.06
+  camShakeAimMultiplier: 0.6
   camShakeCrouchMultiplier: 0.8
   applyFOVEffectOnShooting: 1
   FOVValueToSubtract: 0

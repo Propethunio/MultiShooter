@@ -21,12 +21,8 @@ namespace cowsins
         float timeCounter = 0;
         #endregion
 
-        static CamShake _instance;
-        public static CamShake instance { get { return _instance; } }
-
         #region methods
 
-        private void Awake() => _instance = this;
 
         private float GetFloat(float seed) { return (Mathf.PerlinNoise(seed, timeCounter) - 0.5f) * 2f; }
 

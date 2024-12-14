@@ -5,8 +5,7 @@ using UnityEngine;
 
 namespace HEAVYART.TopDownShooter.Netcode
 {
-    public class CharacterUIController : NetworkBehaviour
-    {
+    public class CharacterUIController : NetworkBehaviour {/*
         public Transform statusBarPrefab;
         private StatusBarUIController statusBarUIController;
         private HealthController healthController;
@@ -33,8 +32,9 @@ namespace HEAVYART.TopDownShooter.Netcode
                 //Link status bar to current transform (it will move with character)
                 statusBarUIController.LinkTransform(transform);
 
-                if (identityControl.isPlayer == true)
+                if (identityControl.isPlayer == true) {
                     statusBarUIController.ShowUserName(identityControl.spawnParameters.Value.name);
+                }
             }
         }
 
@@ -69,6 +69,6 @@ namespace HEAVYART.TopDownShooter.Netcode
                 statusBarUIController.UpdatePosition();
                 statusBarUIController.UpdatePowerUpIndicators(modifiersControlSystem, true);
             }
-        }
+        } */
     }
 }

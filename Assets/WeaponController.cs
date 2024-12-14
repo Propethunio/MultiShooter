@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using HEAVYART.TopDownShooter.Netcode;
 using System.Net.Mail;
 using System.Threading;
+using Unity.Netcode;
 #if UNITY_EDITOR
 using UnityEditor.Presets;
 #endif
@@ -29,8 +30,10 @@ public class CustomShotMethods {
 }
 #endregion
 namespace cowsins {
-    public class WeaponController : MonoBehaviour {
+    public class WeaponController : NetworkBehaviour {
         //References
+        [SerializeField] CamShake CamShake;
+
         [Tooltip("An array that includes all your initial weapons.")] public Weapon_SO[] initialWeapons;
 
         public WeaponIdentification[] inventory;
@@ -220,6 +223,11 @@ namespace cowsins {
         }
 
         public void HandleHitscanProjectileShot() {
+            Debug.Log(IsOwner);
+            if(!IsOwner) {
+                return;
+            }
+
             foreach(var p in firePoint) {
                 canShoot = false; // since you have already shot, you will have to wait in order to being able to shoot again
                 bulletsPerFire = weapon.bulletsPerFire;
@@ -278,7 +286,7 @@ namespace cowsins {
                 if(weapon == null) yield break;
                 shooting = true;
 
-                CamShake.instance.ShootShake(camShakeAmount * aimingCamShakeMultiplier * crouchingCamShakeMultiplier);
+                CamShake.ShootShake(camShakeAmount * aimingCamShakeMultiplier * crouchingCamShakeMultiplier);
                 if(weapon.useProceduralShot) ProceduralShot.Instance.Shoot(weapon.proceduralShotPattern);
 
                 // Determine if we want to add an effect for FOV
@@ -326,9 +334,9 @@ namespace cowsins {
                 Hit(hit.collider.gameObject.layer, dmg, hit, true);
                 hitObj = hit.collider.transform;
 
-                if(hit.transform.TryGetComponent<Rigidbody>(out Rigidbody rb)) {
-                    rb.AddForceAtPosition(ray.direction * 10, hit.point, ForceMode.Impulse);
-                }
+                //if(hit.transform.TryGetComponent<Rigidbody>(out Rigidbody rb)) {
+                //    rb.AddForceAtPosition(ray.direction * 10, hit.point, ForceMode.Impulse);
+                //}
 
                 //Handle Penetration
                 Ray newRay = new Ray(hit.point, ray.direction);
@@ -433,7 +441,8 @@ namespace cowsins {
                     impact.transform.rotation = Quaternion.LookRotation(h.normal);
                     if(weapon != null) impactBullet = Instantiate(weapon.bulletHoleImpact.woodImpact, h.point, Quaternion.identity);
                     break;
-                case int l when l == LayerMask.NameToLayer("Enemy"):
+                case int l when l == LayerMask.NameToLayer("Player"):
+                    break;
                     impact = Instantiate(effects.enemyImpact, h.point, Quaternion.identity); // Enemy
                     impact.transform.rotation = Quaternion.LookRotation(h.normal);
                     if(weapon != null) impactBullet = Instantiate(weapon.bulletHoleImpact.enemyImpact, h.point, Quaternion.identity);
@@ -624,25 +633,25 @@ namespace cowsins {
 
             // UI & OTHERS
             if(weapon.infiniteBullets || weapon.reloadStyle == ReloadingStyle.Overheat) {
-                UIEvents.onDetectReloadMethod?.Invoke(false, !weapon.infiniteBullets);
+                UIController.DetectReloadMethod(false, !weapon.infiniteBullets);
             } else {
-                UIEvents.onDetectReloadMethod?.Invoke(true, false);
+                UIController.DetectReloadMethod(true, false);
             }
 
-            if((int)weapon.shootStyle == 2) UIEvents.onDetectReloadMethod?.Invoke(false, false);
+            if((int)weapon.shootStyle == 2) UIController.DetectReloadMethod(false, false);
 
-            UIEvents.setWeaponDisplay?.Invoke(weapon);
+            UIController.SetWeaponDisplay(weapon);
         }
 
         private void HandleUI() {
 
             // If we dont own a weapon yet, do not continue
             if(weapon == null) {
-                UIEvents.disableWeaponUI?.Invoke();
+                UIController.DisableWeaponUI();
                 return;
             }
 
-            UIEvents.enableWeaponDisplay?.Invoke();
+            UIController.EnableDisplay();
 
             if(weapon.reloadStyle == ReloadingStyle.defaultReload) {
                 if(!weapon.infiniteBullets) {
@@ -651,15 +660,15 @@ namespace cowsins {
                     bool activeLowAmmoUI = id.bulletsLeftInMagazine < id.magazineSize / 3.5f && id.bulletsLeftInMagazine > 0;
                     // Set different display settings for each shoot style 
                     if(weapon.limitedMagazines) {
-                        UIEvents.onBulletsChanged?.Invoke(id.bulletsLeftInMagazine, id.totalBullets, activeReloadUI, activeLowAmmoUI);
+                        UIController.UpdateBullets(id.bulletsLeftInMagazine, id.totalBullets, activeReloadUI, activeLowAmmoUI);
                     } else {
-                        UIEvents.onBulletsChanged?.Invoke(id.bulletsLeftInMagazine, id.magazineSize, activeReloadUI, activeLowAmmoUI);
+                        UIController.UpdateBullets(id.bulletsLeftInMagazine, id.magazineSize, activeReloadUI, activeLowAmmoUI);
                     }
                 } else {
-                    UIEvents.onBulletsChanged?.Invoke(id.bulletsLeftInMagazine, id.totalBullets, false, false);
+                    UIController.UpdateBullets(id.bulletsLeftInMagazine, id.totalBullets, false, false);
                 }
             } else {
-                UIEvents.onHeatRatioChanged?.Invoke(id.heatRatio);
+                UIController.UpdateHeatRatio(id.heatRatio);
             }
 
 

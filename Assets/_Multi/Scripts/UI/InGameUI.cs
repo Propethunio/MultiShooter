@@ -15,6 +15,11 @@ namespace HEAVYART.TopDownShooter.Netcode
         public RectTransform quitGamePopup;
         public Text countdownTextComponent;
         public RectTransform screenJoystick;
+        public GameObject loadingScreen;
+
+        public void HideLoading() {
+            loadingScreen.SetActive(false);
+        }
 
         private void Start()
         {

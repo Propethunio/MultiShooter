@@ -134,15 +134,15 @@ namespace cowsins {
         }
 
         // HEALTH SYSTEM /////////////////////////////////////////////////////////////////////////////////////////
-        private void UpdateHealthUI(float health, float shield, bool damaged) {
+        public void UpdateHealthUI(float health, float shield, bool damaged) {
 
-            healthDisplayMethod?.Invoke(health, shield);
+            Debug.Log(health);
 
-            Color colorSelected = damaged ? damageColor : healColor;
-            healthStatesEffect.color = colorSelected;
+            BarHealthDisplayMethod(health, shield);
+            NumericHealthDisplayMethod(health, shield);
         }
 
-        private void HealthSetUp(float health, float shield, float maxHealth, float maxShield) {
+        public void HealthSetUp(float health, float shield, float maxHealth, float maxShield) {
             if(healthSlider != null) {
                 healthSlider.maxValue = maxHealth;
             }
@@ -244,22 +244,22 @@ namespace cowsins {
 
         // WEAPON    /////////////////////////////////////////////////////////////////////////////////////////
 
-        private void DetectReloadMethod(bool enable, bool useOverheat) {
+        public void DetectReloadMethod(bool enable, bool useOverheat) {
             bulletsUI.gameObject.SetActive(enable);
             magazineUI.gameObject.SetActive(enable);
             overheatUI.transform.parent.gameObject.SetActive(useOverheat);
         }
 
-        private void UpdateHeatRatio(float heatRatio) {
+        public void UpdateHeatRatio(float heatRatio) {
             overheatUI.fillAmount = heatRatio;
         }
-        private void UpdateBullets(int bullets, int mag, bool activeReloadUI, bool activeLowAmmoUI) {
+        public void UpdateBullets(int bullets, int mag, bool activeReloadUI, bool activeLowAmmoUI) {
             bulletsUI.text = bullets.ToString();
             magazineUI.text = mag.ToString();
             reloadUI.gameObject.SetActive(activeReloadUI);
             lowAmmoUI.gameObject.SetActive(activeLowAmmoUI);
         }
-        private void DisableWeaponUI() {
+        public void DisableWeaponUI() {
             overheatUI.transform.parent.gameObject.SetActive(false);
             bulletsUI.gameObject.SetActive(false);
             magazineUI.gameObject.SetActive(false);
@@ -268,9 +268,9 @@ namespace cowsins {
             lowAmmoUI.gameObject.SetActive(false);
         }
 
-        private void SetWeaponDisplay(Weapon_SO weapon) => currentWeaponDisplay.sprite = weapon.icon;
+        public void SetWeaponDisplay(Weapon_SO weapon) => currentWeaponDisplay.sprite = weapon.icon;
 
-        private void EnableDisplay() => currentWeaponDisplay.gameObject.SetActive(true);
+        public void EnableDisplay() => currentWeaponDisplay.gameObject.SetActive(true);
 
         // OTHERS    /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -279,8 +279,8 @@ namespace cowsins {
         private void OnEnable() {
             UIEvents.onHealthChanged += UpdateHealthUI;
             UIEvents.basicHealthUISetUp += HealthSetUp;
-            if(barHealthDisplay) healthDisplayMethod += BarHealthDisplayMethod;
-            if(numericHealthDisplay) healthDisplayMethod += NumericHealthDisplayMethod;
+            healthDisplayMethod += BarHealthDisplayMethod;
+            healthDisplayMethod += NumericHealthDisplayMethod;
             UIEvents.allowedInteraction += AllowedInteraction;
             UIEvents.forbiddenInteraction += ForbiddenInteraction;
             UIEvents.disableInteractionUI += DisableInteractionUI;

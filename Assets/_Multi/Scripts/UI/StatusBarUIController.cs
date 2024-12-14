@@ -49,8 +49,8 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         public void UpdatePosition()
         {
-            float fixedWorldSpaceVerticalOffset = 1.5f;
-            transform.position = mainCamera.WorldToScreenPoint(linkedTransform.position + Vector3.up * fixedWorldSpaceVerticalOffset) + Vector3.up * verticalOffset;
+            //float fixedWorldSpaceVerticalOffset = 1.5f;
+            //transform.position = mainCamera.WorldToScreenPoint(linkedTransform.position + Vector3.up * fixedWorldSpaceVerticalOffset) + Vector3.up * verticalOffset;
         }
 
         public void UpdatePowerUpIndicators(ModifiersControlSystem modifiersControlSystem, bool updateProgress)

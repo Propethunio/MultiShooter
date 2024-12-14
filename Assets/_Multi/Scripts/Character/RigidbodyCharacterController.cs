@@ -116,6 +116,10 @@ namespace HEAVYART.TopDownShooter.Netcode {
         private void Start() {
             playerScale = transform.localScale;
             if(IsOwner == false) rb.isKinematic = true;
+            else {
+                InGameUI ui = GameObject.FindGameObjectWithTag("mapUI").GetComponent<InGameUI>();
+                ui.HideLoading();
+            }
         }
 
         private void Update() {

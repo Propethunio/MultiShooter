@@ -11,6 +11,8 @@ namespace cowsins
     [System.Serializable]
     public class PlayerStats : MonoBehaviour, IDamageable
     {
+        [SerializeField] UIController UIController;
+
         [System.Serializable]
         public class Events
         {
@@ -68,7 +70,7 @@ namespace cowsins
             damageMultiplier = 1;
             healMultiplier = 1;
 
-            //UIEvents.basicHealthUISetUp?.Invoke(health, shield, maxHealth, maxShield);
+            UIController.HealthSetUp(health, shield, maxHealth, maxShield);
 
             GrantControl();
 
@@ -115,7 +117,7 @@ namespace cowsins
             }
 
             // Notify UI about the health change
-            //UIEvents.onHealthChanged?.Invoke(health, shield, true);
+            UIController.UpdateHealthUI(health, shield, true);
 
             // Handle auto-healing
             if (enableAutoHeal && restartAutoHealAfterBeingDamaged)
@@ -153,7 +155,7 @@ namespace cowsins
             }
 
             // Notify UI about the health change
-            //UIEvents.onHealthChanged?.Invoke(health, shield, false);
+            UIController.UpdateHealthUI(health, shield, false);
         }
 
         /// <summary>

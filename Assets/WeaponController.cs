@@ -429,9 +429,6 @@ namespace cowsins {
         /// </summary>
         private void Hit(LayerMask layer, float damage, RaycastHit h, bool damageTarget) {
             events.OnHit.Invoke();
-            GameObject impact = null, impactBullet = null;
-
-            Debug.Log(layer);
 
             // Check the passed layer
             // If it matches any of the provided layers by FPS Engine, then:
@@ -455,17 +452,15 @@ namespace cowsins {
 
             // Check if a head shot was landed
             if(h.collider.gameObject.CompareTag("Critical")) {
-                Debug.Log("CRIT");
-                CowsinsUtilities.GatherDamageableParent(h.collider.transform).Damage(finalDamage * weapon.criticalDamageMultiplier, true);
+                CowsinsUtilities.GatherDamageableParent(h.collider.transform).DamageServerRpc(finalDamage * weapon.criticalDamageMultiplier, true);
             }
             // Check if a body shot was landed ( for children colliders )
             else if(h.collider.gameObject.CompareTag("BodyShot")) {
-                Debug.Log("BODY");
-                CowsinsUtilities.GatherDamageableParent(h.collider.transform).Damage(finalDamage, false);
+                CowsinsUtilities.GatherDamageableParent(h.collider.transform).DamageServerRpc(finalDamage, false);
             }
             // Check if the collision just comes from the parent
             else if(h.collider.GetComponent<IDamageable>() != null) {
-                h.collider.GetComponent<IDamageable>().Damage(finalDamage, false);
+                h.collider.GetComponent<IDamageable>().DamageServerRpc(finalDamage, false);
             }
         }
 

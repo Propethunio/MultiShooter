@@ -135,9 +135,6 @@ namespace cowsins {
 
         // HEALTH SYSTEM /////////////////////////////////////////////////////////////////////////////////////////
         public void UpdateHealthUI(float health, float shield, bool damaged) {
-
-            Debug.Log(health);
-
             BarHealthDisplayMethod(health, shield);
             NumericHealthDisplayMethod(health, shield);
         }

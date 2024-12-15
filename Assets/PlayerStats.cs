@@ -5,17 +5,15 @@ using UnityEngine;
 using UnityEngine.Events;
 using cowsins;
 using HEAVYART.TopDownShooter.Netcode;
+using Unity.Netcode;
 
-namespace cowsins
-{
+namespace cowsins {
     [System.Serializable]
-    public class PlayerStats : MonoBehaviour, IDamageable
-    {
+    public class PlayerStats : NetworkBehaviour, IDamageable {
         [SerializeField] UIController UIController;
 
         [System.Serializable]
-        public class Events
-        {
+        public class Events {
             public UnityEvent OnDeath, OnDamage, OnHeal;
         }
 
@@ -61,8 +59,7 @@ namespace cowsins
 
         #endregion
 
-        private void Start()
-        {
+        private void Start() {
             GetAllReferences();
             // Apply basic settings 
             health = maxHealth;
@@ -74,67 +71,66 @@ namespace cowsins
 
             GrantControl();
 
-            if (enableAutoHeal)
+            if(enableAutoHeal)
                 StartAutoHeal();
         }
 
-        private void Update()
-        {
+        private void Update() {
             Controllable = controllable;
 
-            if (stats.isDead) return; // If player is alive, continue
-
-            if (health <= 0) Die(); // Die in case we ran out of health   
+            if(stats.isDead) return; // If player is alive, continue
 
             // Manage fall damage
-            if (!takesFallDamage) return;
+            if(!takesFallDamage) return;
             ManageFallDamage();
         }
         /// <summary>
         /// Our Player Stats is IDamageable, which means it can be damaged
         /// If so, call this method to damage the player
         /// </summary>
-        public void Damage(float _damage, bool isHeadshot)
-        {
-
+        [ServerRpc(RequireOwnership = false)]
+        public void DamageServerRpc(float _damage, bool isHeadshot) {
             // Ensure damage is a positive value
             float damage = Mathf.Abs(_damage);
 
-            // Trigger damage event
+            // Trigger damage event (only on the server)
             events.OnDamage.Invoke();
 
-            // Apply damage to shield first
-            if (damage <= shield)
-            {
-                shield -= damage;
-            }
-            else
-            {
-                // Apply remaining damage to health
-                damage -= shield;
-                shield = 0;
-                health -= damage;
-            }
+            // Apply damage to health
+            health -= damage;
 
-            // Notify UI about the health change
-            UIController.UpdateHealthUI(health, shield, true);
+            // Clamp health to ensure it doesn't drop below 0
+            health = Mathf.Max(health, 0);
+
+            // Notify all clients about the updated health
+            UpdateHealthClientRpc(health);
+
+            // Handle death on the server
+            if(health <= 0) {
+                Die();
+            }
 
             // Handle auto-healing
-            if (enableAutoHeal && restartAutoHealAfterBeingDamaged)
-            {
+            if(enableAutoHeal && restartAutoHealAfterBeingDamaged) {
                 CancelInvoke(nameof(AutoHeal));
                 InvokeRepeating(nameof(AutoHeal), restartAutoHealTime, healRate);
             }
         }
 
+        [ClientRpc]
+        private void UpdateHealthClientRpc(float updatedHealth) {
+            // Update local health variable
+            health = updatedHealth;
 
-        public void Heal(float healAmount)
-        {
+            // Notify UI about the health change (only on clients)
+            UIController.UpdateHealthUI(health, shield, true);
+        }
+
+        public void Heal(float healAmount) {
             float adjustedHealAmount = Mathf.Abs(healAmount * healMultiplier);
 
             // If we are at full health and shield, do not heal
-            if ((maxShield > 0 && shield == maxShield) || (maxShield == 0 && health == maxHealth))
-            {
+            if((maxShield > 0 && shield == maxShield) || (maxShield == 0 && health == maxHealth)) {
                 return;
             }
 
@@ -149,8 +145,7 @@ namespace cowsins
             float remainingHeal = adjustedHealAmount - effectiveHealForHealth;
 
             // Apply remaining heal to shield if applicable
-            if (remainingHeal > 0 && maxShield > 0)
-            {
+            if(remainingHeal > 0 && maxShield > 0) {
                 shield = Mathf.Min(shield + remainingHeal, maxShield);
             }
 
@@ -161,16 +156,14 @@ namespace cowsins
         /// <summary>
         /// Perform any actions On death
         /// </summary>
-        private void Die()
-        {
+        private void Die() {
             isDead = true;
             events.OnDeath.Invoke(); // Invoke a custom event
         }
         /// <summary>
         /// Basically find everything the script needs to work
         /// </summary>
-        private void GetAllReferences()
-        {
+        private void GetAllReferences() {
             stats = GetComponent<PlayerStats>();
             states = GetComponent<PlayerStates>();
             player = GetComponent<PlayerMovement>();
@@ -178,14 +171,12 @@ namespace cowsins
         /// <summary>
         /// While airborne, if you exceed a certain time, damage on fall will be applied
         /// </summary>
-        private void ManageFallDamage()
-        {
+        private void ManageFallDamage() {
             // Grab current player height
-            if (!player.grounded && transform.position.y > height || !player.grounded && height == null) height = transform.position.y;
+            if(!player.grounded && transform.position.y > height || !player.grounded && height == null) height = transform.position.y;
 
             // Check if we landed, as well if our current height is lower than the original height. If so, check if we should apply damage
-            if (player.grounded && height != null && transform.position.y < height)
-            {
+            if(player.grounded && height != null && transform.position.y < height) {
                 float currentHeight = transform.position.y;
 
                 // Transform nullable variable into a non nullable float for later operations
@@ -194,21 +185,19 @@ namespace cowsins
                 float heightDifference = noNullHeight - currentHeight;
 
                 // If the height difference is enough, apply damage
-                if (heightDifference > minimumHeightDifferenceToApplyDamage) Damage(heightDifference * fallDamageMultiplier, false);
+                if(heightDifference > minimumHeightDifferenceToApplyDamage) DamageServerRpc(heightDifference * fallDamageMultiplier, false);
 
                 // Reset height
                 height = null;
             }
         }
 
-        private void StartAutoHeal()
-        {
+        private void StartAutoHeal() {
             InvokeRepeating(nameof(AutoHeal), healRate, healRate);
         }
 
-        private void AutoHeal()
-        {
-            if (shield >= maxShield && health >= maxHealth) return;
+        private void AutoHeal() {
+            if(shield >= maxShield && health >= maxHealth) return;
 
             Heal(healAmount);
         }
@@ -224,14 +213,12 @@ namespace cowsins
 
         public void ToggleControl() => controllable = !controllable;
 
-        public void CheckIfCanGrantControl()
-        {
-            if (isDead) return;
+        public void CheckIfCanGrantControl() {
+            if(isDead) return;
             GrantControl();
         }
 
-        public void Respawn(Vector3 respawnPosition)
-        {
+        public void Respawn(Vector3 respawnPosition) {
             isDead = false;
             states.ForceChangeState(states._States.Default());
             health = maxHealth;

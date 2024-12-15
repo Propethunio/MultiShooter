@@ -47,7 +47,7 @@ namespace cowsins {
         private void DamageTarget(Transform target, float dmg, bool isCritical) {
             var damageable = CowsinsUtilities.GatherDamageableParent(target);
             if(damageable != null) {
-                damageable.Damage(dmg, isCritical);
+                damageable.DamageServerRpc(dmg, isCritical);
                 projectileHasAlreadyHit = true;
                 DestroyProjectile();
             }
@@ -80,11 +80,11 @@ namespace cowsins {
 
                         // Apply damage if the collider is a player and the explosion should hurt the player
                         if(collider.CompareTag("Player") && hurtsPlayer) {
-                            damageable.Damage(dmg, false);
+                            damageable.DamageServerRpc(dmg, false);
                         }
                         // Apply damage if the collider is not a player
                         else if(!collider.CompareTag("Player")) {
-                            damageable.Damage(dmg, false);
+                            damageable.DamageServerRpc(dmg, false);
                         }
                     }
 

@@ -223,7 +223,7 @@ namespace cowsins {
         }
 
         public void HandleHitscanProjectileShot() {
-            Debug.Log(IsOwner);
+
             if(!IsOwner) {
                 return;
             }
@@ -287,7 +287,6 @@ namespace cowsins {
                 shooting = true;
 
                 CamShake.ShootShake(camShakeAmount * aimingCamShakeMultiplier * crouchingCamShakeMultiplier);
-                if(weapon.useProceduralShot) ProceduralShot.Instance.Shoot(weapon.proceduralShotPattern);
 
                 // Determine if we want to add an effect for FOV
                 if(weapon.applyFOVEffectOnShooting) {
@@ -296,7 +295,8 @@ namespace cowsins {
                 }
                 foreach(var p in firePoint) {
                     if(muzzleVFX != null)
-                        Instantiate(muzzleVFX, p.position, mainCamera.transform.rotation, mainCamera.transform); // VFX
+                        SendFireRPC(p.position, mainCamera.transform.rotation);
+                    //Instantiate(muzzleVFX, p.position, mainCamera.transform.rotation, mainCamera.transform); // VFX
                 }
                 CowsinsUtilities.ForcePlayAnim("shooting", inventory[currentWeapon].GetComponentInChildren<Animator>());
                 //if(weapon.timeBetweenShots != 0) SoundManager.Instance.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 0);
@@ -314,6 +314,15 @@ namespace cowsins {
             }
             shooting = false;
             yield break;
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void SendFireRPC(Vector3 position, Quaternion rotation) {
+            SpawnVFX(position, rotation);
+        }
+
+        private void SpawnVFX(Vector3 position, Quaternion rotation) {
+            Instantiate(muzzleVFX, position, rotation);
         }
         /// <summary>
         /// Hitscan weapons send a raycast that IMMEDIATELY hits the target.
@@ -353,25 +362,32 @@ namespace cowsins {
                 if(weapon.bulletTrail == null) return;
 
                 foreach(var p in firePoint) {
-                    TrailRenderer trail = Instantiate(weapon.bulletTrail, p.position, Quaternion.identity);
-
-                    StartCoroutine(SpawnTrail(trail, hit));
+                    SendTrailRPC(p.position, hit.point);
                 }
             }
         }
 
-        private IEnumerator SpawnTrail(TrailRenderer trail, RaycastHit hit) {
+        [Rpc(SendTo.Everyone)]
+        private void SendTrailRPC(Vector3 startPosition, Vector3 hitPoint) {
+            SpawnTrail(startPosition, hitPoint);
+        }
+
+        private void SpawnTrail(Vector3 startPosition, Vector3 hitPoint) {
+            TrailRenderer trail = Instantiate(weapon.bulletTrail, startPosition, Quaternion.identity);
+            StartCoroutine(MoveTrail(trail, startPosition, hitPoint));
+        }
+
+        private IEnumerator MoveTrail(TrailRenderer trail, Vector3 startPosition, Vector3 hitPoint) {
             float time = 0;
-            Vector3 startPos = trail.transform.position;
 
             while(time < 1) {
-                trail.transform.position = Vector3.Lerp(startPos, hit.point, time);
+                trail.transform.position = Vector3.Lerp(startPosition, hitPoint, time);
                 time += Time.deltaTime / trail.time;
 
                 yield return null;
             }
 
-            trail.transform.position = hit.point;
+            trail.transform.position = hitPoint;
 
             Destroy(trail.gameObject, trail.time);
         }
@@ -415,48 +431,20 @@ namespace cowsins {
             events.OnHit.Invoke();
             GameObject impact = null, impactBullet = null;
 
+            Debug.Log(layer);
+
             // Check the passed layer
             // If it matches any of the provided layers by FPS Engine, then:
             // Instantiate according effect and rotate it accordingly to the surface.
             // Instantiate bullet holes as well.
             switch(layer) {
-                case int l when l == LayerMask.NameToLayer("Grass"):
-                    impact = Instantiate(effects.grassImpact, h.point, Quaternion.identity); // Grass
-                    impact.transform.rotation = Quaternion.LookRotation(h.normal);
-                    if(weapon != null)
-                        impactBullet = Instantiate(weapon.bulletHoleImpact.grassImpact, h.point, Quaternion.identity);
-                    break;
-                case int l when l == LayerMask.NameToLayer("Metal"):
-                    impact = Instantiate(effects.metalImpact, h.point, Quaternion.identity); // Metal
-                    impact.transform.rotation = Quaternion.LookRotation(h.normal);
-                    if(weapon != null) impactBullet = Instantiate(weapon.bulletHoleImpact.metalImpact, h.point, Quaternion.identity);
-                    break;
-                case int l when l == LayerMask.NameToLayer("Mud"):
-                    impact = Instantiate(effects.mudImpact, h.point, Quaternion.identity); // Mud
-                    impact.transform.rotation = Quaternion.LookRotation(h.normal);
-                    if(weapon != null) impactBullet = Instantiate(weapon.bulletHoleImpact.mudImpact, h.point, Quaternion.identity);
-                    break;
-                case int l when l == LayerMask.NameToLayer("Wood"):
-                    impact = Instantiate(effects.woodImpact, h.point, Quaternion.identity); // Wood
-                    impact.transform.rotation = Quaternion.LookRotation(h.normal);
-                    if(weapon != null) impactBullet = Instantiate(weapon.bulletHoleImpact.woodImpact, h.point, Quaternion.identity);
+                case int l when l == LayerMask.NameToLayer("MapBorder"):
                     break;
                 case int l when l == LayerMask.NameToLayer("Player"):
                     break;
-                    impact = Instantiate(effects.enemyImpact, h.point, Quaternion.identity); // Enemy
-                    impact.transform.rotation = Quaternion.LookRotation(h.normal);
-                    if(weapon != null) impactBullet = Instantiate(weapon.bulletHoleImpact.enemyImpact, h.point, Quaternion.identity);
-                    break;
                 default:
-                    impact = Instantiate(effects.metalImpact, h.point, Quaternion.identity);
-                    impact.transform.rotation = Quaternion.LookRotation(h.normal);
-                    if(weapon != null) impactBullet = Instantiate(weapon.bulletHoleImpact.groundIMpact, h.point, Quaternion.identity);
+                    SpawnImpactRPC(h.point, h.normal, h.collider != null ? h.collider.transform.GetComponent<NetworkObject>()?.NetworkObjectId ?? 0 : 0);
                     break;
-            }
-
-            if(h.collider != null && impactBullet != null) {
-                impactBullet.transform.rotation = Quaternion.LookRotation(h.normal);
-                impactBullet.transform.SetParent(h.collider.transform);
             }
 
             // Apply damage
@@ -467,10 +455,12 @@ namespace cowsins {
 
             // Check if a head shot was landed
             if(h.collider.gameObject.CompareTag("Critical")) {
+                Debug.Log("CRIT");
                 CowsinsUtilities.GatherDamageableParent(h.collider.transform).Damage(finalDamage * weapon.criticalDamageMultiplier, true);
             }
             // Check if a body shot was landed ( for children colliders )
             else if(h.collider.gameObject.CompareTag("BodyShot")) {
+                Debug.Log("BODY");
                 CowsinsUtilities.GatherDamageableParent(h.collider.transform).Damage(finalDamage, false);
             }
             // Check if the collision just comes from the parent
@@ -479,6 +469,21 @@ namespace cowsins {
             }
         }
 
+        [Rpc(SendTo.Everyone)]
+        private void SpawnImpactRPC(Vector3 position, Vector3 normal, ulong parentNetworkObjectId) {
+            // Instantiate the impact effect
+            var impact = Instantiate(effects.metalImpact, position, Quaternion.LookRotation(normal));
+
+            // Instantiate the bullet hole
+            if(weapon != null && weapon.bulletHoleImpact.groundIMpact != null) {
+                var impactBullet = Instantiate(weapon.bulletHoleImpact.groundIMpact, position, Quaternion.LookRotation(normal));
+
+                // Set parent if a valid parent exists
+                if(parentNetworkObjectId != 0 && NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(parentNetworkObjectId, out var parentNetworkObject)) {
+                    impactBullet.transform.SetParent(parentNetworkObject.transform);
+                }
+            }
+        }
 
         private void CanShoot() => canShoot = true;
 
@@ -705,7 +710,7 @@ namespace cowsins {
         /// </summary>
         public void HandleInventory() {
             if(inputActions.Player.Reloading.IsPressed()) return; // Do not change weapons while reloading
-                                               // Change slot
+                                                                  // Change slot
             if(inputActions.Player.Scrolling.ReadValue<Vector2>().y > 0 || inputActions.Player.ChangeWeapons.WasPressedThisFrame() && inputActions.Player.ChangeWeapons.ReadValue<float>() < 0) {
                 ForceAimReset(); // Move Weapon back to the original position
                 if(currentWeapon < inventorySize - 1) {

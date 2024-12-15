@@ -327,8 +327,8 @@ MonoBehaviour:
   defaultGameSceneName: GameScene
   delayBeforeCountdown: 1
   countdownTime: 3
-  gameDuration: 120
-  botsCount: 4
+  gameDuration: 300
+  botsCount: 0
   botsSpawnRate: 3
 --- !u!4 &1021768822
 Transform:
@@ -644,7 +644,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultPlayerCount: 2
   minPlayers: 1
-  maxPlayers: 4
+  maxPlayers: 8
   waitForPlayersToInitializeDelay: 2000
   waitForPlayersReadyResponseDelay: 2000
   waitForPlayersToRemoveDelay: 1000

@@ -32,7 +32,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         public override void OnNetworkSpawn()
         {
             //Set default weapon (locally). 
-            ActivateWeapon(WeaponType.Pistol);
+            ActivateWeapon(WeaponType.Rifle);
         }
 
         public void Fire()

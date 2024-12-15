@@ -390,7 +390,7 @@ MonoBehaviour:
   takesFallDamage: 1
   minimumHeightDifferenceToApplyDamage: 4
   fallDamageMultiplier: 7
-  enableAutoHeal: 1
+  enableAutoHeal: 0
   healRate: 1
   healAmount: 5
   restartAutoHealAfterBeingDamaged: 1

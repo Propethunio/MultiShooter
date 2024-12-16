@@ -1,3 +1,4 @@
+using cowsins;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         public static GameManager Instance { get; private set; }
         public NetworkObjectsControl userControl { get; private set; }
         public NetworkObjectsSpawner spawnControl { get; private set; }
-        public InGameUI UI { get; private set; }
+        public UIController UI { get; private set; }
 
         public GameState gameState { get; private set; }
 
@@ -32,7 +33,7 @@ namespace HEAVYART.TopDownShooter.Netcode
             Instance = this;
             userControl = GetComponent<NetworkObjectsControl>();
             spawnControl = GetComponent<NetworkObjectsSpawner>();
-            UI = FindFirstObjectByType<InGameUI>();
+            UI = FindFirstObjectByType<UIController>();
 
             gameState = GameState.WaitingForPlayers;
 

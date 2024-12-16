@@ -1,6 +1,8 @@
+using cowsins;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +10,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 {
     public class EndOfGamePopupUIController : MonoBehaviour
     {
+        [SerializeField] PlayerStats player;
         public Button respawnButton;
         public Button quitButton;
         public Text leaderboardTextComponent;
@@ -25,10 +28,11 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         public void OnRespawnButton()
         {
+            GameManager.Instance.userControl.RemoveNetworkObject(player.GetComponent<NetworkObject>());
+            player.DestroySelf();
             GameManager.Instance.spawnControl.RespawnLocalPlayer();
-            GameManager.Instance.UI.HidePopups();
+            //GameManager.Instance.UI.HidePopups();
         }
-
 
         private void UpdateLeaderboard()
         {

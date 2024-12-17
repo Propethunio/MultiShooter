@@ -53,8 +53,8 @@ namespace HEAVYART.TopDownShooter.Netcode
             OnDeath?.Invoke();
 
             //Register bot death (from player)
-            if (identityControl.isBot == true && killerID != SettingsManager.Instance.ai.defaultOwnerID)
-                GameManager.Instance.RegisterCharacterDeath(killerID);
+            //if (identityControl.isBot == true && killerID != SettingsManager.Instance.ai.defaultOwnerID)
+               // GameManager.Instance.RegisterCharacterDeath(killerID);
         }
     }
 }

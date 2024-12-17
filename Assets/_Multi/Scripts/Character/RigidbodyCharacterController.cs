@@ -116,14 +116,10 @@ namespace HEAVYART.TopDownShooter.Netcode {
         private void Start() {
             playerScale = transform.localScale;
             if(IsOwner == false) rb.isKinematic = true;
-            else {
-                InGameUI ui = GameObject.FindGameObjectWithTag("mapUI").GetComponent<InGameUI>();
-                ui.HideLoading();
-            }
         }
 
         private void Update() {
-            if(!initalized) return;
+            if(!initalized || GameManager.Instance.gameState != GameState.ActiveGame) return;
             CheckGroundedWithRaycast();
             crouching = inputActions.Player.Crouching.IsPressed();
             jumping = inputActions.Player.Jumping.WasPressedThisFrame();

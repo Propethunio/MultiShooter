@@ -17,12 +17,15 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         private void OnEnable()
         {
-            if (GameManager.Instance.gameState == GameState.GameIsOver)
-                respawnButton.gameObject.SetActive(false);
+            UpdateLeaderboard();
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
+            if(GameManager.Instance.gameState == GameState.GameIsOver) {
+                respawnButton.gameObject.SetActive(false);
+                return;
+            }
             UpdateLeaderboard();
         }
 

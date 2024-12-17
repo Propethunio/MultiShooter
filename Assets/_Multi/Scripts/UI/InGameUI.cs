@@ -10,6 +10,8 @@ namespace HEAVYART.TopDownShooter.Netcode
     public class InGameUI : MonoBehaviour
     {
         public RectTransform statusBarsContainer;
+        public RectTransform killsContainer;
+        public GameObject killPrefab;
         public HUDController hudStatusBar;
         public EndOfGamePopupUIController endOfGamePopup;
         public RectTransform quitGamePopup;
@@ -84,6 +86,17 @@ namespace HEAVYART.TopDownShooter.Netcode
             }
             else
                 countdownTextComponent.text = string.Empty;
+        }
+
+        public void ShowKill(string killerName, string killedName) {
+            KillUI kill = Instantiate(killPrefab, killsContainer).GetComponent<KillUI>();
+            if(killerName == null) {
+                kill.Setup(killedName, true);
+            } else {
+                kill.Setup(killedName, false, killerName);
+            }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(killsContainer);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         public NetworkObjectsControl userControl { get; private set; }
         public NetworkObjectsSpawner spawnControl { get; private set; }
         public UIController UI { get; private set; }
+        public InGameUI gameUI { get; private set; }
 
         public GameState gameState { get; private set; }
 
@@ -26,14 +27,18 @@ namespace HEAVYART.TopDownShooter.Netcode
         public double gameStartTime { get; private set; }
         public double gameEndTime { get; private set; }
 
+        private HashSet<ulong> processedDeaths = new HashSet<ulong>();
+
         public Dictionary<ulong, LeaderboardUserProfile> leaderboard = new Dictionary<ulong, LeaderboardUserProfile>();
 
         private void Awake()
         {
             Instance = this;
+
             userControl = GetComponent<NetworkObjectsControl>();
             spawnControl = GetComponent<NetworkObjectsSpawner>();
             UI = FindFirstObjectByType<UIController>();
+            gameUI = FindAnyObjectByType<InGameUI>();
 
             gameState = GameState.WaitingForPlayers;
 
@@ -67,6 +72,11 @@ namespace HEAVYART.TopDownShooter.Netcode
             }
         }
 
+        [Rpc(SendTo.Everyone)]
+        void HideLoadingRpc() {
+            gameUI.HideLoading();
+        }
+
         void FixedUpdate()
         {
             //Handle waiting for players
@@ -78,6 +88,8 @@ namespace HEAVYART.TopDownShooter.Netcode
                 //Room is full
                 if (connectedPlayersCount == expectedPlayersCount)
                 {
+                    HideLoadingRpc();
+
                     float networkDelay = 0.5f;
 
                     double startTime =
@@ -127,10 +139,42 @@ namespace HEAVYART.TopDownShooter.Netcode
             gameState = GameState.WaitingForCountdown;
         }
 
-        public void RegisterCharacterDeath(ulong playerID)
-        {
-            //Increase scores
-            leaderboard[playerID].score++;
+        [Rpc(SendTo.Everyone)]
+        public void RegisterCharacterDeathRPC(ulong killedID, bool byOtherPlayer, ulong killerID = 0) {
+
+            if(processedDeaths.Contains(killedID)) {
+                return;
+            }
+
+            processedDeaths.Add(killedID);
+
+            if(byOtherPlayer) {
+                if(leaderboard.ContainsKey(killerID))
+                {
+                    leaderboard[killerID].score++;
+                }
+                AddKillToUI(killedID, true, killerID);
+            } else {
+                AddKillToUI(killedID, false);
+            }
+
+            StartCoroutine(CleanupProcessedDeaths(killedID));
+        }
+
+        private IEnumerator CleanupProcessedDeaths(ulong killedID) {
+            yield return new WaitForSeconds(.2f);
+            processedDeaths.Remove(killedID);
+        }
+
+        void AddKillToUI(ulong killedPlayerID, bool byOhter, ulong ohterPlayerID = 0) {
+            string killerID = null;
+            string killedID = leaderboard[killedPlayerID].userName;
+
+            if(byOhter && leaderboard.ContainsKey(ohterPlayerID)) {
+                killerID = leaderboard[ohterPlayerID].userName;
+            }
+
+            gameUI.ShowKill(killerID, killedID);
         }
 
         public void AddLeaderboardUser(LeaderboardUserProfile userProfile)

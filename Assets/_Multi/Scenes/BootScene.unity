@@ -327,9 +327,9 @@ MonoBehaviour:
   defaultGameSceneName: GameScene
   delayBeforeCountdown: 1
   countdownTime: 3
-  gameDuration: 300
+  gameDuration: 20
   botsCount: 0
-  botsSpawnRate: 3
+  botsSpawnRate: 5000
 --- !u!4 &1021768822
 Transform:
   m_ObjectHideFlags: 0

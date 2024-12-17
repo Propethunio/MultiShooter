@@ -127,7 +127,9 @@ namespace cowsins {
         public void ShowEndOfGamePopup() {
             HidePopups();
             HideStats();
-            endOfGamePopup.gameObject.SetActive(true);
+            if(endOfGamePopup) {
+                endOfGamePopup.gameObject.SetActive(true);
+            }
         }
 
         void HideStats() {
@@ -135,7 +137,8 @@ namespace cowsins {
                 healthSlider.gameObject.SetActive(false);
                 bulletsUI.gameObject.SetActive(false);
                 magazineUI.gameObject.SetActive(false);
-                currentWeaponDisplay.gameObject.SetActive(false);
+                currentWeaponDisplay.enabled = false;
+                crosshair.gameObject.SetActive(false);
             }
         }
 

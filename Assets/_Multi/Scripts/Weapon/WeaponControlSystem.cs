@@ -37,7 +37,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         public void Fire()
         {
-            if (healthController.isAlive)
+            if (healthController.isAlive && GameManager.Instance.gameState == GameState.ActiveGame)
                 selectedWeapon.Fire();
         }
 

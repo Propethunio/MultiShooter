@@ -166,6 +166,8 @@ namespace cowsins {
 
         private float aimingSpeed;
         public void Aim() {
+            if(GameManager.Instance.gameState != GameState.ActiveGame) return;
+
             isAiming = true;
 
             if(weapon.applyBulletSpread) spread = weapon.aimSpreadAmount;
@@ -224,7 +226,7 @@ namespace cowsins {
 
         public void HandleHitscanProjectileShot() {
 
-            if(!IsOwner) {
+            if(!IsOwner || GameManager.Instance.gameState != GameState.ActiveGame) {
                 return;
             }
 
@@ -452,11 +454,11 @@ namespace cowsins {
 
             // Check if a head shot was landed
             if(h.collider.gameObject.CompareTag("Critical")) {
-                CowsinsUtilities.GatherDamageableParent(h.collider.transform).DamageServerRpc(finalDamage * weapon.criticalDamageMultiplier, true);
+                CowsinsUtilities.GatherDamageableParent(h.collider.transform).DamageServerRpc(finalDamage * weapon.criticalDamageMultiplier, true, true, NetworkManager.Singleton.LocalClientId);
             }
             // Check if a body shot was landed ( for children colliders )
             else if(h.collider.gameObject.CompareTag("BodyShot")) {
-                CowsinsUtilities.GatherDamageableParent(h.collider.transform).DamageServerRpc(finalDamage, false);
+                CowsinsUtilities.GatherDamageableParent(h.collider.transform).DamageServerRpc(finalDamage, false, true, NetworkManager.Singleton.LocalClientId);
             }
             // Check if the collision just comes from the parent
             else if(h.collider.GetComponent<IDamageable>() != null) {

@@ -12,6 +12,9 @@ namespace cowsins {
     [System.Serializable]
     public class PlayerStats : NetworkBehaviour, IDamageable {
 
+        [HideInInspector] public bool wasDamagedByOtherPlayer;
+        [HideInInspector] public ulong killerID;
+
         [SerializeField] MoveCamera moveCamera;
 
         [SerializeField] UIController UIController;
@@ -131,7 +134,13 @@ namespace cowsins {
         /// If so, call this method to damage the player
         /// </summary>
         [ServerRpc(RequireOwnership = false)]
-        public void DamageServerRpc(float _damage, bool isHeadshot) {
+        public void DamageServerRpc(float _damage, bool isHeadshot, bool byOhterPlayer = false, ulong killerID = 0) {
+            if(byOhterPlayer) {
+                wasDamagedByOtherPlayer = true;
+                this.killerID = killerID;
+            }
+
+
             // Ensure damage is a positive value
             float damage = Mathf.Abs(_damage);
 
@@ -201,6 +210,14 @@ namespace cowsins {
         private void Die() {
             if(!IsServer)
                 return; // Ensure this logic only executes on the server
+
+            if(isDead) return;
+
+            if(wasDamagedByOtherPlayer) {
+                GameManager.Instance.RegisterCharacterDeathRPC(GetComponent<NetworkObject>().OwnerClientId, true, killerID);
+            } else {
+                GameManager.Instance.RegisterCharacterDeathRPC(GetComponent<NetworkObject>().OwnerClientId, false);
+            }
 
             isDead = true;
 

@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: d9b5bbdbfd857cb4f9d7e4b9dc17dc7f
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20040
+  packageName: FPS Hangar
+  packageVersion: 1.1
+  assetPath: Assets/FPSHangar/_Source/Meshes/Materials/DecalWhite_3.mat
+  uploadId: 67201

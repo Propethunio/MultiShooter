@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ac1b2fc0b5dd8374baae9a8c526f76e6
+timeCreated: 1424337947
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20040
+  packageName: FPS Hangar
+  packageVersion: 1.1
+  assetPath: Assets/FPSHangar/Animators/Particles/ParticleHallwaysElectricalSparksBlue.controller
+  uploadId: 67201

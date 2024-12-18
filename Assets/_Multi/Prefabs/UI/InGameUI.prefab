@@ -558,6 +558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814456f4469318241a1d5433c037c29d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   respawnButton: {fileID: 7314720639266439966}
   quitButton: {fileID: 7344106676056369472}
   leaderboardTextComponent: {fileID: 6669043677584128775}
@@ -1159,11 +1160,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   statusBarsContainer: {fileID: 8975053288719247835}
+  killsContainer: {fileID: 0}
+  killPrefab: {fileID: 0}
   hudStatusBar: {fileID: 8234967141648029321}
   endOfGamePopup: {fileID: 551209160222845964}
   quitGamePopup: {fileID: 8294045145382328318}
   countdownTextComponent: {fileID: 2553259299775166129}
   screenJoystick: {fileID: 6162797487576739011}
+  loadingScreen: {fileID: 0}
 --- !u!1 &1895385532901107510
 GameObject:
   m_ObjectHideFlags: 0

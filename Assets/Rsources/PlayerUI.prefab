@@ -5920,6 +5920,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db1b5c4865fe15c4689f7a9793806689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  endOfGamePopup: {fileID: 0}
   playerMovement: {fileID: 0}
   barHealthDisplay: 1
   numericHealthDisplay: 1

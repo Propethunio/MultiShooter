@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 25d0fdb3678a2d547a9380f042999094
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20040
+  packageName: FPS Hangar
+  packageVersion: 1.1
+  assetPath: Assets/FPSHangar/_Source/Meshes/Materials/Seat.mat
+  uploadId: 67201

@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: f6a4088c33ebe4b44ae173f97cf87f83
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20040
+  packageName: FPS Hangar
+  packageVersion: 1.1
+  assetPath: Assets/FPSHangar/_Source/Meshes/Materials/BarrelRed.mat
+  uploadId: 67201

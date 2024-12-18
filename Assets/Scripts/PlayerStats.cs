@@ -12,6 +12,7 @@ namespace cowsins {
     [System.Serializable]
     public class PlayerStats : NetworkBehaviour, IDamageable {
 
+        public Collider mainCollider;
         [HideInInspector] public bool wasDamagedByOtherPlayer;
         [HideInInspector] public ulong killerID;
 
@@ -230,6 +231,8 @@ namespace cowsins {
 
         [ClientRpc]
         private void HandlePlayerDeathClientRpc() {
+            mainCollider.enabled = false;
+
             // Disable the weapon holder
             weaponHolder.SetActive(false);
 

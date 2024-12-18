@@ -381,6 +381,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  mainCollider: {fileID: 8711761584113075444}
+  wasDamagedByOtherPlayer: 0
+  killerID: 0
   moveCamera: {fileID: 1847207218771431254}
   UIController: {fileID: 729022986258019682}
   health: 0

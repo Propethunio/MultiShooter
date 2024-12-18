@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 055b7e39b25821c49b204e7002d45d87
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20040
+  packageName: FPS Hangar
+  packageVersion: 1.1
+  assetPath: Assets/FPSHangar/_Source/Meshes/Materials/DecalWhite_Draw.mat
+  uploadId: 67201

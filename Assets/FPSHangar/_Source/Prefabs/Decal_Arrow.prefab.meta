@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 91892a5199798404d81e51b70c0346e1
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20040
+  packageName: FPS Hangar
+  packageVersion: 1.1
+  assetPath: Assets/FPSHangar/_Source/Prefabs/Decal_Arrow.prefab
+  uploadId: 67201

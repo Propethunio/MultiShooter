@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 4ae491ee2ddecb9408fc8eebca299477
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20040
+  packageName: FPS Hangar
+  packageVersion: 1.1
+  assetPath: Assets/FPSHangar/_Source/VolumetricLight/VolumetricLightSet.cs
+  uploadId: 67201

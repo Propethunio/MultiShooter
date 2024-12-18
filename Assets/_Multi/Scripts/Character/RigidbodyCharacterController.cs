@@ -36,7 +36,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
         public Vector3 PlayerScale { get { return playerScale; } }
         private RaycastHit slopeHit;
         [Tooltip("Distance from the bottom of the player to detect ground"), SerializeField, Min(0)] private float groundCheckDistance;
-        private float maxSlopeAngle = 35f;
+        private float maxSlopeAngle = 55f;
         [Min(0.01f)]
         [Tooltip("Max speed the player can reach. Velocity is clamped by this value.")] public float maxSpeedAllowed = 40;
         public Transform orientation;
@@ -136,11 +136,11 @@ namespace HEAVYART.TopDownShooter.Netcode {
 
         public void Movement(bool move) {
 
-            if(!IsPlayerOnSlope() || (IsPlayerOnSlope() && rb.linearVelocity.y < 0)) rb.AddForce(Vector3.down * 30.19f, ForceMode.Acceleration);
+            if(!IsPlayerOnSlope()) rb.AddForce(Vector3.down * 30.19f, ForceMode.Acceleration);
 
             if(rb.linearVelocity.magnitude > maxSpeedAllowed) rb.linearVelocity = Vector3.ClampMagnitude(rb.linearVelocity, maxSpeedAllowed);
 
-            if(!IsPlayerOnSlope() || (IsPlayerOnSlope() && rb.linearVelocity.y < 0)) rb.AddForce(Vector3.down * Time.deltaTime * 10);
+            if(!IsPlayerOnSlope()) rb.AddForce(Vector3.down * Time.deltaTime * 10);
 
             Vector2 relativeVelocity = FindVelRelativeToLook();
             float xRelativeVelocity = relativeVelocity.x, yRelativeVelocity = relativeVelocity.y;
@@ -170,7 +170,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
 
                 rb.useGravity = false;
 
-                if(rb.linearVelocity.y > 0) rb.AddForce(Vector3.down * 70, ForceMode.Force);
+                if(rb.linearVelocity.y > 0) rb.AddForce(Vector3.down * 40, ForceMode.Force);
             } else {
                 rb.AddForce((orientation.transform.forward * y * acceleration * Time.deltaTime * multiplier * multiplierV / multiplier2), ForceMode.Force);
                 rb.AddForce((orientation.transform.right * x * acceleration * Time.deltaTime * multiplier / multiplier2), ForceMode.Force);

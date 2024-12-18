@@ -2,6 +2,7 @@
 /// This script belongs to cowsins™ as a part of the cowsins´ FPS Engine. All rights reserved. 
 /// </summary>
 using HEAVYART.TopDownShooter.Netcode;
+using System.Collections;
 using UnityEngine;
 
 namespace cowsins {
@@ -60,7 +61,7 @@ namespace cowsins {
 
         [SerializeField] private GameObject hitmarkerObj;
 
-        private bool isVisible = true;
+        private bool isVisible = false;
 
         public bool IsHidden { get { return isVisible; } }
 
@@ -80,6 +81,17 @@ namespace cowsins {
 
         private void Start() {
             inputActions = player.inputActions;
+            StartCoroutine(ShowCrosshair());
+        }
+
+        IEnumerator ShowCrosshair() {
+            while(true) {
+                if(GameManager.Instance.gameState == GameState.ActiveGame) {
+                    break;
+                }
+                yield return null;
+            }
+            isVisible = true;
         }
 
         private void Update() {

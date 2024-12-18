@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6fe0136213741f348a8720cdf48ab096
+timeCreated: 1424704955
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20040
+  packageName: FPS Hangar
+  packageVersion: 1.1
+  assetPath: Assets/FPSHangar/Materials/Particles/ParticleElectricalFault.mat
+  uploadId: 67201

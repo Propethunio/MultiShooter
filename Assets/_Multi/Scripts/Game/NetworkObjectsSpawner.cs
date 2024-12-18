@@ -97,6 +97,9 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         private Vector3 GetFreeSpawnPoint(List<NetworkObject> characters, List<Transform> spawnPoints)
         {
+
+            return spawnPoints[Random.Range(0, spawnPoints.Count)].position;
+
             if (characters.Count == 0)
             {
                 return spawnPoints[Random.Range(0, spawnPoints.Count)].position;

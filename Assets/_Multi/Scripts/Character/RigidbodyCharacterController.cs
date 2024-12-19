@@ -170,7 +170,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
 
                 rb.useGravity = false;
 
-                if(rb.linearVelocity.y > 0) rb.AddForce(Vector3.down * 40, ForceMode.Force);
+                if(rb.linearVelocity.y > 0) rb.AddForce(Vector3.down * 20, ForceMode.Force);
             } else {
                 rb.AddForce((orientation.transform.forward * y * acceleration * Time.deltaTime * multiplier * multiplierV / multiplier2), ForceMode.Force);
                 rb.AddForce((orientation.transform.right * x * acceleration * Time.deltaTime * multiplier / multiplier2), ForceMode.Force);

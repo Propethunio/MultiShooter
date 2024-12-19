@@ -30,6 +30,11 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         public event Action<string> OnErrorOccurred;
 
+        public enum GameMode {
+            CaptureTheFlag,
+            Conquest
+        }
+
         private void Start()
         {
             dataControl = new LobbyDataControl();

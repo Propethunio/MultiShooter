@@ -6,5 +6,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         public string version = "";
         public int playersCount = 2;
         public bool isPublic = true;
+        public string map = "";
+        public string lobbyName = "";
     }
 }

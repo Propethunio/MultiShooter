@@ -87,7 +87,24 @@ namespace cowsins {
                 StartAutoHeal();
         }
 
+        [ClientRpc]
+        void ToggleCursorClientRpc(bool value) {
+            if(!IsOwner) return;
+
+            if(Cursor.visible == value) return;
+
+            Cursor.visible = value;
+            if(Cursor.visible) {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.SetCursor(null, new Vector2(Screen.width / 2, Screen.height / 2), CursorMode.Auto);
+            } else {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+        }
+
         private void Update() {
+
+            ToggleCursorClientRpc(isDead || GameManager.Instance.gameState == GameState.GameIsOver);
             Controllable = controllable;
 
             if(stats.isDead) return; // If player is alive, continue

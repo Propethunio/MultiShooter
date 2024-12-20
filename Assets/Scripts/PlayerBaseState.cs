@@ -5,7 +5,7 @@ namespace cowsins
         protected PlayerStates _ctx;
         protected PlayerStateFactory _factory;
 
-        public PlayerBaseState(PlayerStates currentContext, PlayerStateFactory playerStateFactory)
+        protected PlayerBaseState(PlayerStates currentContext, PlayerStateFactory playerStateFactory)
         {
             _ctx = currentContext;
             _factory = playerStateFactory;

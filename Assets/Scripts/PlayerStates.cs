@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace cowsins
 {
     public class PlayerStates : MonoBehaviour
@@ -6,8 +7,17 @@ namespace cowsins
         PlayerBaseState _currentState;
         PlayerStateFactory _states;
 
-        public PlayerBaseState CurrentState { get { return _currentState; } set { _currentState = value; } }
-        public PlayerStateFactory _States { get { return _states; } set { _states = value; } }
+        public PlayerBaseState CurrentState
+        {
+            get { return _currentState; }
+            set { _currentState = value; }
+        }
+
+        public PlayerStateFactory _States
+        {
+            get { return _states; }
+            set { _states = value; }
+        }
 
 
         private void Awake()

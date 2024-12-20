@@ -1,11 +1,14 @@
 using HEAVYART.TopDownShooter.Netcode;
 using UnityEngine;
+
 namespace cowsins
 {
     public class PlayerJumpState : PlayerBaseState
     {
         public PlayerJumpState(PlayerStates currentContext, PlayerStateFactory playerStateFactory)
-            : base(currentContext, playerStateFactory) { }
+            : base(currentContext, playerStateFactory)
+        {
+        }
 
         private PlayerMovement player;
 
@@ -28,13 +31,16 @@ namespace cowsins
             HandleMovement();
         }
 
-        public override void FixedUpdateState() { }
+        public override void FixedUpdateState()
+        {
+        }
 
-        public override void ExitState() { }
+        public override void ExitState()
+        {
+        }
 
         public override void CheckSwitchState()
         {
-
             if (player.ReadyToJump && inputActions.Player.Jumping.WasPressedThisFrame() && player.grounded)
             {
                 SwitchState(_factory.Jump());
@@ -47,11 +53,8 @@ namespace cowsins
                 return;
             }
 
-            if (player.grounded)
-            {
-                SwitchState(_factory.Default());
-                return;
-            }
+            if (!player.grounded) return;
+            SwitchState(_factory.Default());
         }
 
         void HandleMovement()

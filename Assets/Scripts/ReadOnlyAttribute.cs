@@ -3,7 +3,9 @@ using UnityEngine;
 
 namespace cowsins
 {
-    public class ReadOnlyAttribute : PropertyAttribute { }
+    public class ReadOnlyAttribute : PropertyAttribute
+    {
+    }
 #if UNITY_EDITOR
     [CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
     public class ReadOnlyDrawer : PropertyDrawer

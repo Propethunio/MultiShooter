@@ -1,13 +1,23 @@
 using UnityEngine;
+
 namespace cowsins
 {
     public class WeaponStates : MonoBehaviour
     {
-        WeaponBaseState _currentState;
-        WeaponStateFactory _states;
+        private WeaponBaseState _currentState;
+        private WeaponStateFactory _states;
 
-        public WeaponBaseState CurrentState { get { return _currentState; } set { _currentState = value; } }
-        public WeaponStateFactory _States { get { return _states; } set { _states = value; } }
+        public WeaponBaseState CurrentState
+        {
+            get { return _currentState; }
+            set { _currentState = value; }
+        }
+
+        public WeaponStateFactory _States
+        {
+            get { return _states; }
+            set { _states = value; }
+        }
 
         public CanvasGroup inspectionUI;
 

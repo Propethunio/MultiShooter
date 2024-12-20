@@ -6,7 +6,7 @@ namespace cowsins
         protected WeaponStateFactory _factory;
         protected WeaponBaseState _currentSuperState;
 
-        public WeaponBaseState(WeaponStates currentContext, WeaponStateFactory playerStateFactory)
+        protected WeaponBaseState(WeaponStates currentContext, WeaponStateFactory playerStateFactory)
         {
             _ctx = currentContext;
             _factory = playerStateFactory;

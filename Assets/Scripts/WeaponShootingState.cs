@@ -7,7 +7,9 @@ namespace cowsins
         private PlayerStats stats;
 
         public WeaponShootingState(WeaponStates currentContext, WeaponStateFactory playerStateFactory)
-            : base(currentContext, playerStateFactory) { }
+            : base(currentContext, playerStateFactory)
+        {
+        }
 
         public override void EnterState()
         {
@@ -19,7 +21,6 @@ namespace cowsins
         {
             if (controller.weapon == null) return;
             CheckSwitchState();
-
         }
 
         public override void FixedUpdateState()
@@ -34,8 +35,6 @@ namespace cowsins
         public override void CheckSwitchState()
         {
             SwitchState(_factory.Default());
-           
         }
-
     }
 }

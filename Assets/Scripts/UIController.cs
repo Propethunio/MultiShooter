@@ -1,6 +1,7 @@
 /// <summary>
-/// This script belongs to cowsins™ as a part of the cowsins´ FPS Engine. All rights reserved. 
+/// This script belongs to cowsinsï¿½ as a part of the cowsinsï¿½ FPS Engine. All rights reserved. 
 /// </summary>
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,61 +14,81 @@ using System.Collections.Generic;
 using HEAVYART.TopDownShooter.Netcode;
 using Unity.Netcode;
 
-namespace cowsins {
+namespace cowsins
+{
     /// <summary>
     /// Manage UI actions.
     /// This is still subject to change and optimize.
     /// </summary>
-    public class UIController : NetworkBehaviour {
+    public class UIController : NetworkBehaviour
+    {
         public EndOfGamePopupUIController endOfGamePopup;
         public PlayerMovement playerMovement;
 
-        [Tooltip("Use image bars to display player statistics.")] public bool barHealthDisplay;
+        [Tooltip("Use image bars to display player statistics.")]
+        public bool barHealthDisplay;
 
-        [Tooltip("Use text to display player statistics.")] public bool numericHealthDisplay;
+        [Tooltip("Use text to display player statistics.")]
+        public bool numericHealthDisplay;
 
         private Action<float, float> healthDisplayMethod;
 
-        [Tooltip("Slider that will display the health on screen"), SerializeField] private Slider healthSlider;
+        [Tooltip("Slider that will display the health on screen"), SerializeField]
+        private Slider healthSlider;
 
-        [Tooltip("Slider that will display the shield on screen"), SerializeField] private Slider shieldSlider;
+        [Tooltip("Slider that will display the shield on screen"), SerializeField]
+        private Slider shieldSlider;
 
-        [SerializeField, Tooltip("UI Element ( TMPro text ) that displays current and maximum health.")] private TextMeshProUGUI healthTextDisplay;
+        [SerializeField, Tooltip("UI Element ( TMPro text ) that displays current and maximum health.")]
+        private TextMeshProUGUI healthTextDisplay;
 
-        [SerializeField, Tooltip("UI Element ( TMPro te¡xt ) that displays current and maximum shield.")] private TextMeshProUGUI shieldTextDisplay;
+        [SerializeField, Tooltip("UI Element ( TMPro teï¿½xt ) that displays current and maximum shield.")]
+        private TextMeshProUGUI shieldTextDisplay;
 
         [Tooltip("This image shows damage and heal states visually on your screen, you can change the image" +
-                "to any you like, but note that color will be overriden by the script"), SerializeField]
+                 "to any you like, but note that color will be overriden by the script"), SerializeField]
         private Image healthStatesEffect;
 
-        [Tooltip(" Color of healthStatesEffect on different actions such as being hurt or healed"), SerializeField] private Color damageColor, healColor, coinCollectColor, xpCollectColor;
+        [Tooltip(" Color of healthStatesEffect on different actions such as being hurt or healed"), SerializeField]
+        private Color damageColor, healColor, coinCollectColor, xpCollectColor;
 
-        [Tooltip("Time for the healthStatesEffect to fade out"), SerializeField] private float fadeOutTime;
+        [Tooltip("Time for the healthStatesEffect to fade out"), SerializeField]
+        private float fadeOutTime;
 
-        [Tooltip("An object showing death events will be displayed on kill")] public bool displayEvents;
+        [Tooltip("An object showing death events will be displayed on kill")]
+        public bool displayEvents;
 
-        [Tooltip("UI element which contains the killfeed. Where the kilfeed object will be instantiated and parented to"), SerializeField]
+        [Tooltip(
+             "UI element which contains the killfeed. Where the kilfeed object will be instantiated and parented to"),
+         SerializeField]
         private GameObject killfeedContainer;
 
-        [Tooltip("Object to spawn"), SerializeField] private GameObject killfeedObject;
+        [Tooltip("Object to spawn"), SerializeField]
+        private GameObject killfeedObject;
 
-        [Tooltip("Attach the UI you want to use as your interaction UI")] public GameObject interactUI;
+        [Tooltip("Attach the UI you want to use as your interaction UI")]
+        public GameObject interactUI;
 
-        [Tooltip("Displays the current progress of your interaction"), SerializeField] private Image interactUIProgressDisplay;
+        [Tooltip("Displays the current progress of your interaction"), SerializeField]
+        private Image interactUIProgressDisplay;
 
-        [SerializeField, Tooltip("UI that displays incompatible interactions.")] private GameObject forbiddenInteractionUI;
+        [SerializeField, Tooltip("UI that displays incompatible interactions.")]
+        private GameObject forbiddenInteractionUI;
 
         [Tooltip("Inside the interact UI, this is the text that will display the object you want to interact with " +
-           "or any custom method you would like." +
-           "Do check Interactable.cs for that or, if you want, read our documentation or contact the cowsins support " +
-           "in order to make custom interactions."), SerializeField]
+                 "or any custom method you would like." +
+                 "Do check Interactable.cs for that or, if you want, read our documentation or contact the cowsins support " +
+                 "in order to make custom interactions."), SerializeField]
         private TextMeshProUGUI interactText;
 
-        [Tooltip("UI enabled when inspecting.")] public CanvasGroup inspectionUI;
+        [Tooltip("UI enabled when inspecting.")]
+        public CanvasGroup inspectionUI;
 
-        [SerializeField, Tooltip("Text that displays the name of the current weapon when inspecting.")] private TextMeshProUGUI weaponDisplayText_AttachmentsUI;
+        [SerializeField, Tooltip("Text that displays the name of the current weapon when inspecting.")]
+        private TextMeshProUGUI weaponDisplayText_AttachmentsUI;
 
-        [SerializeField, Tooltip("Prefab of the UI element that represents an attachment on-screen when inspecting")] private GameObject attachmentDisplay_UIElement;
+        [SerializeField, Tooltip("Prefab of the UI element that represents an attachment on-screen when inspecting")]
+        private GameObject attachmentDisplay_UIElement;
 
         [SerializeField, Tooltip("Group of attachments. Attachment UI elements are wrapped inside these.")]
         private GameObject
@@ -79,21 +100,29 @@ namespace cowsins {
             flashlights_AttachmentsGroup,
             lasers_AttachmentsGroup;
 
-        [SerializeField, Tooltip("Color of an attachment UI element when it is equipped.")] private Color usingAttachmentColor;
+        [SerializeField, Tooltip("Color of an attachment UI element when it is equipped.")]
+        private Color usingAttachmentColor;
 
-        [SerializeField, Tooltip("Color of an attachment UI element when it is unequipped. This is the default color.")] private Color notUsingAttachmentColor;
+        [SerializeField, Tooltip("Color of an attachment UI element when it is unequipped. This is the default color.")]
+        private Color notUsingAttachmentColor;
 
-        [SerializeField, Tooltip("Contains dashUIElements in game.")] private Transform dashUIContainer;
+        [SerializeField, Tooltip("Contains dashUIElements in game.")]
+        private Transform dashUIContainer;
 
-        [SerializeField, Tooltip("Displays a dash slot in-game. This keeps stored at dashUIContainer during runtime.")] private Transform dashUIElement;
+        [SerializeField, Tooltip("Displays a dash slot in-game. This keeps stored at dashUIContainer during runtime.")]
+        private Transform dashUIElement;
 
-        [Tooltip("Attach the appropriate UI here")] public TextMeshProUGUI bulletsUI, magazineUI, reloadUI, lowAmmoUI;
+        [Tooltip("Attach the appropriate UI here")]
+        public TextMeshProUGUI bulletsUI, magazineUI, reloadUI, lowAmmoUI;
 
-        [Tooltip("Display an icon of your current weapon")] public Image currentWeaponDisplay;
+        [Tooltip("Display an icon of your current weapon")]
+        public Image currentWeaponDisplay;
 
-        [Tooltip("Image that represents heat levels of your overheating weapon"), SerializeField] private Image overheatUI;
+        [Tooltip("Image that represents heat levels of your overheating weapon"), SerializeField]
+        private Image overheatUI;
 
-        [Tooltip(" Attach the CanvasGroup that contains the inventory")] public CanvasGroup inventoryContainer;
+        [Tooltip(" Attach the CanvasGroup that contains the inventory")]
+        public CanvasGroup inventoryContainer;
 
         [SerializeField] private GameObject coinsUI;
 
@@ -115,43 +144,52 @@ namespace cowsins {
         public static AddXP addXP;
 
 
-        private void Start() {
-            if(IsOwner) {
+        private void Start()
+        {
+            if (IsOwner)
+            {
                 gameObject.SetActive(true);
                 GameManager.Instance.OnGameEnd += ShowEndOfGamePopup;
-            } else {
+            }
+            else
+            {
                 gameObject.SetActive(false);
             }
         }
 
-        public void ShowEndOfGamePopup() {
+        public void ShowEndOfGamePopup()
+        {
             HidePopups();
             HideStats();
-            if(endOfGamePopup) {
+            if (endOfGamePopup)
+            {
                 endOfGamePopup.gameObject.SetActive(true);
             }
         }
 
-        void HideStats() {
-            if(healthSlider != null) {
-                healthSlider.gameObject.SetActive(false);
-                bulletsUI.gameObject.SetActive(false);
-                magazineUI.gameObject.SetActive(false);
-                currentWeaponDisplay.enabled = false;
-                crosshair.gameObject.SetActive(false);
-            }
+        private void HideStats()
+        {
+            if (healthSlider == null) return;
+            healthSlider.gameObject.SetActive(false);
+            bulletsUI.gameObject.SetActive(false);
+            magazineUI.gameObject.SetActive(false);
+            currentWeaponDisplay.enabled = false;
+            crosshair.gameObject.SetActive(false);
         }
 
-        public void HidePopups() {
-            if(endOfGamePopup == null) return;
+        public void HidePopups()
+        {
+            if (endOfGamePopup == null) return;
             endOfGamePopup.gameObject.SetActive(false);
             //quitGamePopup.gameObject.SetActive(false);
         }
 
-        private void Update() {
-            if(healthStatesEffect.color != new Color(healthStatesEffect.color.r,
-                healthStatesEffect.color.g,
-                healthStatesEffect.color.b, 0)) healthStatesEffect.color -= new Color(0, 0, 0, Time.deltaTime * fadeOutTime);
+        private void Update()
+        {
+            if (healthStatesEffect.color != new Color(healthStatesEffect.color.r,
+                    healthStatesEffect.color.g,
+                    healthStatesEffect.color.b, 0))
+                healthStatesEffect.color -= new Color(0, 0, 0, Time.deltaTime * fadeOutTime);
 
 
             //Inventory
@@ -160,42 +198,52 @@ namespace cowsins {
         }
 
         // HEALTH SYSTEM /////////////////////////////////////////////////////////////////////////////////////////
-        public void UpdateHealthUI(float health, float shield, bool damaged) {
+        public void UpdateHealthUI(float health, float shield, bool damaged)
+        {
             BarHealthDisplayMethod(health, shield);
             NumericHealthDisplayMethod(health, shield);
         }
 
-        public void HealthSetUp(float health, float shield, float maxHealth, float maxShield) {
-            if(healthSlider != null) {
+        public void HealthSetUp(float health, float shield, float maxHealth, float maxShield)
+        {
+            if (healthSlider != null)
+            {
                 healthSlider.maxValue = maxHealth;
             }
-            if(shieldSlider != null) {
+
+            if (shieldSlider != null)
+            {
                 shieldSlider.maxValue = maxShield;
             }
 
             healthDisplayMethod?.Invoke(health, shield);
 
-            if(shield == 0) shieldSlider.gameObject.SetActive(false);
+            if (shield == 0) shieldSlider.gameObject.SetActive(false);
         }
 
-        private void BarHealthDisplayMethod(float health, float shield) {
-            if(healthSlider != null)
+        private void BarHealthDisplayMethod(float health, float shield)
+        {
+            if (healthSlider != null)
                 healthSlider.value = health;
 
-            if(shieldSlider != null)
+            if (shieldSlider != null)
                 shieldSlider.value = shield;
         }
-        private void NumericHealthDisplayMethod(float health, float shield) {
-            if(healthTextDisplay != null) {
+
+        private void NumericHealthDisplayMethod(float health, float shield)
+        {
+            if (healthTextDisplay != null)
+            {
                 healthTextDisplay.text = health > 0 && health <= 1 ? 1.ToString("F0") : health.ToString("F0");
             }
 
-            if(shieldTextDisplay != null)
+            if (shieldTextDisplay != null)
                 shieldTextDisplay.text = shield.ToString("F0");
         }
 
         // INTERACTION /////////////////////////////////////////////////////////////////////////////////////////
-        private void AllowedInteraction(string displayText) {
+        private void AllowedInteraction(string displayText)
+        {
             forbiddenInteractionUI.SetActive(false);
             interactUI.SetActive(true);
             interactText.text = displayText;
@@ -203,35 +251,44 @@ namespace cowsins {
             interactUI.GetComponent<AudioSource>().Play();
 
             // Adjust the width of the background based on the length of the displayText
-            RectTransform imageRect = interactUI.GetComponentInChildren<Image>().GetComponent<RectTransform>();
+            var imageRect = interactUI.GetComponentInChildren<Image>().GetComponent<RectTransform>();
             float textLength = displayText.Length;
             imageRect.sizeDelta = new Vector2(100 + textLength * 10, imageRect.sizeDelta.y);
         }
 
-        private void ForbiddenInteraction() {
+        private void ForbiddenInteraction()
+        {
             forbiddenInteractionUI.SetActive(true);
             interactUI.SetActive(false);
         }
 
-        private void DisableInteractionUI() {
+        private void DisableInteractionUI()
+        {
             forbiddenInteractionUI.SetActive(false);
             interactUI.SetActive(false);
         }
-        private void InteractioProgressUpdate(float value) {
+
+        private void InteractioProgressUpdate(float value)
+        {
             interactUIProgressDisplay.gameObject.SetActive(true);
             interactUIProgressDisplay.fillAmount = value;
         }
-        private void FinishInteraction() {
+
+        private void FinishInteraction()
+        {
             interactUIProgressDisplay.gameObject.SetActive(false);
         }
 
         // UI EVENTS /////////////////////////////////////////////////////////////////////////////////////////
-        public void AddKillfeed(string name) {
-            GameObject killfeed = Instantiate(killfeedObject, transform.position, Quaternion.identity, killfeedContainer.transform);
-            killfeed.transform.GetChild(0).Find("Text").GetComponent<TextMeshProUGUI>().text = "You killed: " + name;
+        public void AddKillfeed(string name)
+        {
+            var killFeed = Instantiate(killfeedObject, transform.position, Quaternion.identity,
+                killfeedContainer.transform);
+            killFeed.transform.GetChild(0).Find("Text").GetComponent<TextMeshProUGUI>().text = "You killed: " + name;
         }
 
-        public void Hitmarker(bool headshot) {
+        public void Hitmarker(bool headshot)
+        {
             hitmarker.Play(headshot);
         }
 
@@ -242,23 +299,27 @@ namespace cowsins {
         /// <summary>
         /// Draws the dash UI 
         /// </summary>
-        private void DrawDashUI(int amountOfDashes) {
+        private void DrawDashUI(int amountOfDashes)
+        {
             dashElements = new List<GameObject>(amountOfDashes);
-            int i = 0;
-            while(i < amountOfDashes) {
+            var i = 0;
+            while (i < amountOfDashes)
+            {
                 var uiElement = Instantiate(dashUIElement, dashUIContainer);
                 dashElements.Add(uiElement.gameObject);
                 i++;
             }
         }
 
-        private void RegainDash() {
+        private void RegainDash()
+        {
             // Enable a new UI Element
             var uiElement = Instantiate(dashUIElement, dashUIContainer);
             dashElements.Add(uiElement.gameObject);
         }
 
-        private void DashUsed(int currentDashes) {
+        private void DashUsed(int currentDashes)
+        {
             // Remove the UI Element
             var element = dashElements[currentDashes];
             dashElements.Remove(element);
@@ -267,22 +328,28 @@ namespace cowsins {
 
         // WEAPON    /////////////////////////////////////////////////////////////////////////////////////////
 
-        public void DetectReloadMethod(bool enable, bool useOverheat) {
+        public void DetectReloadMethod(bool enable, bool useOverheat)
+        {
             bulletsUI.gameObject.SetActive(enable);
             magazineUI.gameObject.SetActive(enable);
             overheatUI.transform.parent.gameObject.SetActive(useOverheat);
         }
 
-        public void UpdateHeatRatio(float heatRatio) {
+        public void UpdateHeatRatio(float heatRatio)
+        {
             overheatUI.fillAmount = heatRatio;
         }
-        public void UpdateBullets(int bullets, int mag, bool activeReloadUI, bool activeLowAmmoUI) {
+
+        public void UpdateBullets(int bullets, int mag, bool activeReloadUI, bool activeLowAmmoUI)
+        {
             bulletsUI.text = bullets.ToString();
             magazineUI.text = mag.ToString();
             reloadUI.gameObject.SetActive(activeReloadUI);
             lowAmmoUI.gameObject.SetActive(activeLowAmmoUI);
         }
-        public void DisableWeaponUI() {
+
+        public void DisableWeaponUI()
+        {
             overheatUI.transform.parent.gameObject.SetActive(false);
             bulletsUI.gameObject.SetActive(false);
             magazineUI.gameObject.SetActive(false);
@@ -299,7 +366,8 @@ namespace cowsins {
 
         public void ChangeScene(int scene) => SceneManager.LoadScene(scene);
 
-        private void OnEnable() {
+        private void OnEnable()
+        {
             UIEvents.onHealthChanged += UpdateHealthUI;
             UIEvents.basicHealthUISetUp += HealthSetUp;
             healthDisplayMethod += BarHealthDisplayMethod;
@@ -323,7 +391,9 @@ namespace cowsins {
 
             interactUI.SetActive(false);
         }
-        private void OnDisable() {
+
+        private void OnDisable()
+        {
             UIEvents.onHealthChanged = null;
             UIEvents.basicHealthUISetUp = null;
             healthDisplayMethod = null;
@@ -346,6 +416,5 @@ namespace cowsins {
             UIEvents.enableWeaponDisplay = null;
             addXP = null;
         }
-
     }
 }

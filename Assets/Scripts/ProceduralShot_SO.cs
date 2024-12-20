@@ -3,6 +3,7 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
 namespace cowsins
 {
     [CreateAssetMenu(fileName = "NewProceduralShot", menuName = "COWSINS/New Procedural Shot Effect", order = 2)]
@@ -13,20 +14,27 @@ namespace cowsins
         [System.Serializable]
         public struct Translation
         {
-            [Tooltip("Translation on the X axis. The movement follows this Animation Curves from 0 to 1")] public AnimationCurve xTranslation;
+            [Tooltip("Translation on the X axis. The movement follows this Animation Curves from 0 to 1")]
+            public AnimationCurve xTranslation;
 
-            [Tooltip("Translation on the Y axis. The movement follows this Animation Curves from 0 to 1")] public AnimationCurve yTranslation;
+            [Tooltip("Translation on the Y axis. The movement follows this Animation Curves from 0 to 1")]
+            public AnimationCurve yTranslation;
 
-            [Tooltip("Translation on the Z axis. The movement follows this Animation Curves from 0 to 1")] public AnimationCurve zTranslation;
+            [Tooltip("Translation on the Z axis. The movement follows this Animation Curves from 0 to 1")]
+            public AnimationCurve zTranslation;
         }
+
         [System.Serializable]
         public struct Rotation
         {
-            [Tooltip("Rotation on the X axis. The movement follows this Animation Curves from 0 to 1")] public AnimationCurve xRotation;
+            [Tooltip("Rotation on the X axis. The movement follows this Animation Curves from 0 to 1")]
+            public AnimationCurve xRotation;
 
-            [Tooltip("Rotation on the Y axis. The movement follows this Animation Curves from 0 to 1")] public AnimationCurve yRotation;
+            [Tooltip("Rotation on the Y axis. The movement follows this Animation Curves from 0 to 1")]
+            public AnimationCurve yRotation;
 
-            [Tooltip("Rotation on the Z axis. The movement follows this Animation Curves from 0 to 1")] public AnimationCurve zRotation;
+            [Tooltip("Rotation on the Z axis. The movement follows this Animation Curves from 0 to 1")]
+            public AnimationCurve zRotation;
         }
 
         public Translation translation;
@@ -51,9 +59,9 @@ namespace cowsins
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            Weapon_SO myScript = target as Weapon_SO;
+            var myScript = target as Weapon_SO;
 
-            Texture2D myTexture = Resources.Load<Texture2D>("CustomEditor/proceduralShot_CustomEditor") as Texture2D;
+            var myTexture = Resources.Load<Texture2D>("CustomEditor/proceduralShot_CustomEditor") as Texture2D;
             GUILayout.Label(myTexture);
 
             EditorGUILayout.BeginVertical();

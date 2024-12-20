@@ -12,7 +12,12 @@ namespace cowsins
 
         public static Action<float, float, float, float> basicHealthUISetUp;
 
-        public static Action forbiddenInteraction, disableInteractionUI, onFinishInteractionProgress, onDashGained, disableWeaponUI, enableWeaponDisplay;
+        public static Action forbiddenInteraction,
+            disableInteractionUI,
+            onFinishInteractionProgress,
+            onDashGained,
+            disableWeaponUI,
+            enableWeaponDisplay;
 
         public static Action<float> onInteractionProgressChanged, onHeatRatioChanged;
 

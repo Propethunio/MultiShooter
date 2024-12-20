@@ -1,8 +1,10 @@
 /// <summary>
-/// This script belongs to cowsins™ as a part of the cowsins´ FPS Engine. All rights reserved. 
+/// This script belongs to cowsinsï¿½ as a part of the cowsinsï¿½ FPS Engine. All rights reserved. 
 /// </summary>
+
 using UnityEngine.UI;
 using UnityEngine;
+
 namespace cowsins
 {
     /// <summary>
@@ -10,7 +12,8 @@ namespace cowsins
     /// </summary>
     public class UISlot : MonoBehaviour
     {
-        [HideInInspector] public int id; // Get position of this slot and organize it in the internal array of slots from WeaponController.cs
+        [HideInInspector] public int
+            id; // Get position of this slot and organize it in the internal array of slots from WeaponController.cs
 
         [HideInInspector] public Weapon_SO weapon;
 
@@ -22,7 +25,7 @@ namespace cowsins
 
         private void OnEnable() => initScale = transform.localScale;
 
-        private void Update() => GetImage();// Get current weapon image
+        private void Update() => GetImage(); // Get current weapon image
 
         public void GetImage() => image.sprite = (weapon == null) ? nullWeapon : weapon.icon;
     }

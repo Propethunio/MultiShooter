@@ -5,7 +5,6 @@ namespace cowsins
 {
     public class Hitmarker : MonoBehaviour
     {
-
         [SerializeField] private AudioClip hitmarkerSoundEffect;
 
         [SerializeField] private Animator animator;

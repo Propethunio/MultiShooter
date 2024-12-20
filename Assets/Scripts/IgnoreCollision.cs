@@ -1,7 +1,9 @@
 /// <summary>
 /// This script belongs to cowsins™ as a part of the cowsins´ FPS Engine. All rights reserved. 
 /// </summary>
+
 using UnityEngine;
+
 namespace cowsins
 {
     /// <summary>
@@ -11,14 +13,12 @@ namespace cowsins
     /// </summary>
     public class IgnoreCollision : MonoBehaviour
     {
-        void OnCollisionEnter(Collision collision)
+        private void OnCollisionEnter(Collision collision)
         {
-
             if (collision.transform.CompareTag("Player"))
             {
                 Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
             }
         }
-
     }
 }

@@ -23,7 +23,7 @@ namespace HEAVYART.TopDownShooter.Netcode
             yield return new WaitUntil(() => UnityServices.State == ServicesInitializationState.Initialized);
             yield return new WaitUntil(() => AuthenticationService.Instance.IsSignedIn == true);
 
-            if (PlayerDataKeeper.selectedScene == "none")
+            //if (PlayerDataKeeper.selectedScene == "none")
                 PlayerDataKeeper.selectedScene = defaultGameSceneName;
         }
     }

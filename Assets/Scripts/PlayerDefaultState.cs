@@ -55,7 +55,7 @@ namespace cowsins
             if (player.x != 0 || player.y != 0) player.events.OnMove.Invoke();
             if (!stats.controllable) return;
             player.Look();
-            //player.FootSteps();
+            player.FootSteps();
             player.HandleCoyoteJump();
         }
     }

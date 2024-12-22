@@ -7,6 +7,8 @@ namespace cowsins
 
     public class WeaponDefaultState : WeaponBaseState
     {
+        private SoundMenago soundMenago;
+
         private WeaponController controller;
 
         private PlayerStats stats;
@@ -31,6 +33,7 @@ namespace cowsins
             controller = _ctx.GetComponent<WeaponController>();
             stats = _ctx.GetComponent<PlayerStats>();
             player = _ctx.GetComponent<PlayerMovement>();
+            soundMenago = _ctx.GetComponent<SoundMenago>();
 
             holdProgress = 0;
             holdingEmpty = false;
@@ -109,7 +112,7 @@ namespace cowsins
                 if (controller.id.bulletsLeftInMagazine <= 0 && inputActions.Player.Firing.IsPressed() &&
                     noBulletIndicator <= 0 && !holdingEmpty)
                 {
-                    //SoundManager.Instance.PlaySound(controller.weapon.audioSFX.emptyMagShoot, 0, .15f, true, 0);
+                    soundMenago.PlaySound(controller.weapon.audioSFX.emptyMagShoot, 0, .15f, true, 1, _ctx.transform.position);
                     noBulletIndicator =
                         (controller.weapon.shootMethod == ShootingMethod.HoldAndRelease ||
                          controller.weapon.shootMethod == ShootingMethod.HoldUntilReady)

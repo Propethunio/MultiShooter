@@ -51,6 +51,8 @@ namespace cowsins
     public class WeaponController : NetworkBehaviour
     {
         //References
+        [SerializeField] SoundMenago soundMenago;
+
         [SerializeField] CamShake CamShake;
 
         [Tooltip("An array that includes all your initial weapons.")]
@@ -296,7 +298,8 @@ namespace cowsins
                 shellRigidbody.AddTorque(mainCamera.transform.right * torque, ForceMode.Impulse);
                 shellRigidbody.AddForce(shellForce, ForceMode.Impulse);
             }
-            //if(weapon.timeBetweenShots == 0) SoundManager.Instance.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 0);
+
+            if(weapon.timeBetweenShots == 0) soundMenago.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 1, transform.position, false);
 
             Invoke(nameof(CanShoot), fireRate);
         }
@@ -363,7 +366,7 @@ namespace cowsins
                 }
 
                 CowsinsUtilities.ForcePlayAnim("shooting", inventory[currentWeapon].GetComponentInChildren<Animator>());
-                //if(weapon.timeBetweenShots != 0) SoundManager.Instance.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 0);
+                if(weapon.timeBetweenShots != 0) soundMenago.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 1, transform.position, false);
 
                 ProgressRecoil();
 
@@ -580,6 +583,7 @@ namespace cowsins
             {
                 impactBullet.transform.SetParent(parentNetworkObject.transform);
             }
+
         }
 
         private void CanShoot() => canShoot = true;
@@ -594,7 +598,7 @@ namespace cowsins
         private IEnumerator DefaultReload()
         {
             // Play reload sound
-            //SoundManager.Instance.PlaySound(id.bulletsLeftInMagazine == 0 ? weapon.audioSFX.emptyMagReload : weapon.audioSFX.reload, .1f, 0, true, 0);
+            soundMenago.PlaySound(id.bulletsLeftInMagazine == 0 ? weapon.audioSFX.emptyMagReload : weapon.audioSFX.reload, .1f, 0, true, 1, transform.position);
             reloading = true;
             yield return new WaitForSeconds(.001f);
 

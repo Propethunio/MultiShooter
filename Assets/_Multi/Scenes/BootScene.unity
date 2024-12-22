@@ -324,7 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77cd2b0bff6aa844a499fe318a62518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultGameSceneName: GameScene
+  defaultGameSceneName: GameSceneContainers
   delayBeforeCountdown: 1
   countdownTime: 3
   gameDuration: 300
@@ -380,8 +380,7 @@ MonoBehaviour:
     movementSpeed: 5
     health: 50
     dropChance: 100
-    dropElements:
-    - {fileID: 6294016024824979690, guid: 7a0619b1d67052049bc7bac3f7a229e3, type: 3}
+    dropElements: []
   availableColors:
   - {r: 1, g: 0.454902, b: 0, a: 1}
   - {r: 0.16913725, g: 0.3843647, b: 0.74509805, a: 1}
@@ -589,15 +588,7 @@ MonoBehaviour:
     minDistanceToUpdateManeuverPoint: 0.5
     maneuverExitTime: 3
     dropChance: 85
-    dropElements:
-    - {fileID: 6294016024824979690, guid: 7a0619b1d67052049bc7bac3f7a229e3, type: 3}
-    - {fileID: 6294016024824979690, guid: 7a0619b1d67052049bc7bac3f7a229e3, type: 3}
-    - {fileID: 6294016024824979690, guid: 7a0619b1d67052049bc7bac3f7a229e3, type: 3}
-    - {fileID: 3457612183828131020, guid: e8e25045fa66a2e4cb49a01d67944552, type: 3}
-    - {fileID: 558421408969406970, guid: 7688d36ee4f1c3f46be3f54b8d0ef562, type: 3}
-    - {fileID: 4527567637472676682, guid: 51b0f18bb9036b74893715dc8789518b, type: 3}
-    - {fileID: 2355980555187418559, guid: 6e293b9032724a04b981054b87c01d08, type: 3}
-    - {fileID: 5659808920901729346, guid: 71d91ca7a6893bd458cf3f425a0d23f0, type: 3}
+    dropElements: []
 --- !u!4 &1528021342
 Transform:
   m_ObjectHideFlags: 0

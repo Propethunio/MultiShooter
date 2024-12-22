@@ -13,6 +13,12 @@ using cowsins;
 namespace HEAVYART.TopDownShooter.Netcode {
     public class PlayerMovement : NetworkBehaviour {
 
+        [Tooltip("Play speed of the footsteps."), SerializeField, Range(.1f, .95f)] private float footstepSpeed;
+        [SerializeField] SoundMenago soundMenago;
+        [SerializeField] AudioClip jumpSFX;
+        [SerializeField] AudioClip landSFX;
+        [SerializeField] AudioClip[] stepSFX;
+
         [System.Serializable]
         public class Events // Store your events
 {
@@ -29,7 +35,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
         }
 
         [HideInInspector] public WeaponController weaponController;
-
+        private float stepTimer;
         public float aimingSensitivityMultiplier = .5f;
 
         private Vector3 playerScale;
@@ -115,10 +121,11 @@ namespace HEAVYART.TopDownShooter.Netcode {
 
         private void Start() {
             playerScale = transform.localScale;
-            if(IsOwner == false) rb.isKinematic = true;
+            //if(IsOwner == false) rb.isKinematic = true;
         }
 
         private void Update() {
+            if(!IsOwner) return;
             if(!initalized || GameManager.Instance.gameState != GameState.ActiveGame) return;
             CheckGroundedWithRaycast();
             crouching = inputActions.Player.Crouching.IsPressed();
@@ -232,7 +239,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
                 if(IsFloor(normal)) {
                     if(!wasGrounded) {
                         // Trigger landing logic
-                        //SoundManager.Instance.PlaySound(sounds.landSFX, 0, 0, false, 0);
+                        soundMenago.PlaySound(landSFX, 0, 0, false, 1, transform.position);
                         //events.OnLand.Invoke(); // We have just landed
                         //jumpCount = maxJumps; // Reset jumps left
                         hasJumped = false;
@@ -297,7 +304,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
                     rb.linearVelocity = new Vector3(rb.linearVelocity.x, rb.linearVelocity.y / 2, rb.linearVelocity.z);
             }
 
-            //SoundManager.Instance.PlaySound(sounds.jumpSFX, 0, 0, false, 0);
+            soundMenago.PlaySound(jumpSFX, 0, 0, false, 1, transform.position);
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
@@ -330,6 +337,32 @@ namespace HEAVYART.TopDownShooter.Netcode {
 
         public void Stop() {
             rb.isKinematic = true;
+        }
+
+        public void FootSteps() {
+            // Reset timer if conditions are met + dont play the footsteps
+            if(!grounded || rb.linearVelocity.sqrMagnitude <= .1f) {
+                stepTimer = 1 - footstepSpeed;
+                return;
+            }
+
+            // Wait for the next time to play a sound
+            stepTimer -= Time.deltaTime * rb.linearVelocity.magnitude / 15;
+
+            // Play the sound and reset
+            if(stepTimer <= 0) {
+                stepTimer = 1 - footstepSpeed;
+
+                if(Physics.Raycast(playerCam.position, Vector3.down, out RaycastHit hit, 2.7f, whatIsGround)) {
+
+                    int i = 0;
+                    switch(LayerMask.LayerToName(hit.transform.gameObject.layer)) {
+                        case "Ground": // Ground
+                            soundMenago.PlaySound(stepSFX[UnityEngine.Random.Range(0, stepSFX.Length)], 0, .15f, true, 1, transform.position);
+                            break;
+                    }
+                }
+            }
         }
     }
 }

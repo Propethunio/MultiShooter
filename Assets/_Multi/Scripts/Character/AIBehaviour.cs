@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,63 +9,52 @@ namespace HEAVYART.TopDownShooter.Netcode
     {
         public string navmeshAgentName = "Humanoid";
 
-        private float movementSpeed;
-        private float smoothMovementTime = 0.1f;
+        private const float SmoothMovementTime = 0.1f;
 
-        private WeaponControlSystem weaponControlSystem;
-        private HealthController healthController;
-        private ModifiersControlSystem modifiersControlSystem;
-        private PlayerMovement rigidbodyCharacterController;
-        private CharacterIdentityControl identityControl;
+        private WeaponControlSystem _weaponControlSystem;
+        private HealthController _healthController;
+        private PlayerMovement _rigidbodyCharacterController;
+        private CharacterIdentityControl _identityControl;
 
-        private float distanceToOpenFire;
-        private float targetUpdateRate;
-        private float maneuverAngle;
-        private float minDistanceOfManeuver;
-        private float maxDistanceOfManeuver;
-        private float minDistanceToUpdateManeuverPoint;
-        private float maneuverExitTime;
+        private float _distanceToOpenFire;
+        private float _targetUpdateRate;
+        private float _maneuverAngle;
+        private float _minDistanceOfManeuver;
+        private float _maxDistanceOfManeuver;
+        private float _minDistanceToUpdateManeuverPoint;
+        private float _maneuverExitTime;
 
-        private Vector3 movementVelocity = Vector3.zero;
-        private Vector3 currentMovementInput;
+        private Vector3 _movementVelocity = Vector3.zero;
+        private Vector3 _currentMovementInput;
 
-        private Transform targetTransform;
-        private Vector3 moveToPoint;
-        private float lastPointUpdateTime = 0;
+        private Transform _targetTransform;
+        private Vector3 _moveToPoint;
+        private float _lastPointUpdateTime = 0;
 
 
         private void Start()
         {
-            //Basic components
-            weaponControlSystem = GetComponent<WeaponControlSystem>();
-            healthController = GetComponent<HealthController>();
-            modifiersControlSystem = GetComponent<ModifiersControlSystem>();
-            rigidbodyCharacterController = GetComponent<PlayerMovement>();
-            identityControl = GetComponent<CharacterIdentityControl>();
+            _weaponControlSystem = GetComponent<WeaponControlSystem>();
+            _healthController = GetComponent<HealthController>();
+            _rigidbodyCharacterController = GetComponent<PlayerMovement>();
+            _identityControl = GetComponent<CharacterIdentityControl>();
 
-            //Settings
-            int modelIndex = identityControl.spawnParameters.Value.modelIndex;
-            AIConfig config = SettingsManager.Instance.ai.configs[modelIndex];
+            var modelIndex = _identityControl.spawnParameters.Value.modelIndex;
+            var config = SettingsManager.Instance.ai.configs[modelIndex];
 
-            //Health
-            healthController.Initialize(config.health);
-            healthController.OnDeath += () => GetComponent<CharacterEffectsController>().RunDestroyScenario(false);
+            _healthController.Initialize(config.health);
+            _healthController.OnDeath += () => GetComponent<CharacterEffectsController>().RunDestroyScenario(false);
 
-            //Register spawned bot
             GameManager.Instance.userControl.AddAIObject(NetworkObject);
 
-            movementSpeed = config.movementSpeed;
+            _distanceToOpenFire = config.distanceToOpenFire;
+            _targetUpdateRate = config.targetUpdateRate;
 
-            //Target & fire
-            distanceToOpenFire = config.distanceToOpenFire;
-            targetUpdateRate = config.targetUpdateRate;
-
-            //Maneuver
-            maneuverAngle = config.maneuverAngle;
-            minDistanceOfManeuver = config.minDistanceOfManeuver;
-            maxDistanceOfManeuver = config.maxDistanceOfManeuver;
-            minDistanceToUpdateManeuverPoint = config.minDistanceToUpdateManeuverPoint;
-            maneuverExitTime = config.maneuverExitTime;
+            _maneuverAngle = config.maneuverAngle;
+            _minDistanceOfManeuver = config.minDistanceOfManeuver;
+            _maxDistanceOfManeuver = config.maxDistanceOfManeuver;
+            _minDistanceToUpdateManeuverPoint = config.minDistanceToUpdateManeuverPoint;
+            _maneuverExitTime = config.maneuverExitTime;
 
             gameObject.name = config.botPrefab.name;
 
@@ -77,109 +65,89 @@ namespace HEAVYART.TopDownShooter.Netcode
         {
             if (IsOwner == false) return;
 
-            //Stop any movement when game ends
-            if (GameManager.Instance.gameState == GameState.GameIsOver) rigidbodyCharacterController.Stop();
+            if (GameManager.Instance.gameState == GameState.GameIsOver) _rigidbodyCharacterController.Stop();
 
-            //Stop any movement when bot is dead
-            if (healthController.isAlive == false) rigidbodyCharacterController.Stop();
+            if (_healthController.isAlive == false) _rigidbodyCharacterController.Stop();
 
-            //Wait for game to start
             if (GameManager.Instance.gameState != GameState.ActiveGame) return;
 
-            if (targetTransform != null)
+            if (_targetTransform == null) return;
+            var lookDirection = _targetTransform.position - transform.position;
+            lookDirection.y = 0;
+
+            _weaponControlSystem.lineOfSightTransform.localRotation = Quaternion.LookRotation(lookDirection);
+
+            var moveDirection = _moveToPoint - transform.position;
+
+            if (moveDirection.magnitude < _minDistanceToUpdateManeuverPoint ||
+                Time.time > _lastPointUpdateTime + _maneuverExitTime)
             {
-                Vector3 lookDirection = targetTransform.position - transform.position;
-                lookDirection.y = 0;
-
-                weaponControlSystem.lineOfSightTransform.localRotation = Quaternion.LookRotation(lookDirection);
-
-                Vector3 moveDirection = moveToPoint - transform.position;
-
-                //Update maneuver point if bot is close enough or can't reach moveToPoint before exit time (probably it's stuck)
-                if (moveDirection.magnitude < minDistanceToUpdateManeuverPoint || Time.time > lastPointUpdateTime + maneuverExitTime)
-                {
-                    Vector3 maneuverPoint = CalculateManeuverPoint();
-                    moveToPoint = GetNextNavigationPoint(maneuverPoint);
-                    moveDirection = moveToPoint - transform.position;
-                    lastPointUpdateTime = Time.time;
-                }
-
-                //Update movement speed according to currently active modifiers
-                currentMovementInput = Vector3.SmoothDamp(currentMovementInput, moveDirection.normalized, ref movementVelocity, smoothMovementTime);
-                float currentSpeed = modifiersControlSystem.CalculateSpeedMultiplier() * movementSpeed;
-
-                //Move (using physics)
-                //rigidbodyCharacterController.Move(currentMovementInput, currentSpeed);
-
-                //Fire weapon
-                if (lookDirection.magnitude < distanceToOpenFire)
-                    weaponControlSystem.Fire();
+                var maneuverPoint = CalculateManeuverPoint();
+                _moveToPoint = GetNextNavigationPoint(maneuverPoint);
+                moveDirection = _moveToPoint - transform.position;
+                _lastPointUpdateTime = Time.time;
             }
+
+            _currentMovementInput = Vector3.SmoothDamp(_currentMovementInput, moveDirection.normalized,
+                ref _movementVelocity, SmoothMovementTime);
+            if (lookDirection.magnitude < _distanceToOpenFire)
+                _weaponControlSystem.Fire();
         }
 
         private Vector3 CalculateManeuverPoint()
         {
-            float halfAngle = maneuverAngle * 0.5f;
-            Quaternion lookRotation = Quaternion.LookRotation(transform.position - targetTransform.position);
+            var halfAngle = _maneuverAngle * 0.5f;
+            var lookRotation = Quaternion.LookRotation(transform.position - _targetTransform.position);
             lookRotation *= Quaternion.Euler(0, Random.Range(-halfAngle, halfAngle), 0);
 
-            //Get random point around target
-            return targetTransform.position + (lookRotation * Vector3.forward) * Random.Range(minDistanceOfManeuver, maxDistanceOfManeuver);
+            return _targetTransform.position + (lookRotation * Vector3.forward) *
+                Random.Range(_minDistanceOfManeuver, _maxDistanceOfManeuver);
         }
 
         private IEnumerator RunUpdateTargetLoop()
         {
-            while (healthController.isAlive)
+            while (_healthController.isAlive)
             {
-                targetTransform = FindNearestTarget();
-                yield return new WaitForSeconds(targetUpdateRate);
+                _targetTransform = FindNearestTarget();
+                yield return new WaitForSeconds(_targetUpdateRate);
             }
         }
 
         private Transform FindNearestTarget()
         {
-            //List of targets (could be any other collection)
-            List<NetworkObject> targets = GameManager.Instance.userControl.allCharacters;
+            var targets = GameManager.Instance.userControl.allCharacters;
 
             Transform nearestTarget = null;
-            float minDistance = float.MaxValue;
+            var minDistance = float.MaxValue;
 
-            for (int i = 0; i < targets.Count; i++)
+            foreach (var t in targets)
             {
-                //Skip ourselves and null elements (just in case)
-                if (targets[i] == null || targets[i].transform == transform) continue;
+                if (t == null || t.transform == transform) continue;
 
-                //Distance to next character
-                float distance = (transform.position - targets[i].transform.position).magnitude;
+                var distance = (transform.position - t.transform.position).magnitude;
 
-                //Find closest
-                if (distance < minDistance)
-                {
-                    nearestTarget = targets[i].transform;
-                    minDistance = distance;
-                }
+                if (!(distance < minDistance)) continue;
+                nearestTarget = t.transform;
+                minDistance = distance;
             }
 
             return nearestTarget;
         }
 
-        //NavMesh path calculation
-        protected Vector3 GetNextNavigationPoint(Vector3 targetPoint)
+        private Vector3 GetNextNavigationPoint(Vector3 targetPoint)
         {
-            NavMeshPath path = new NavMeshPath();
+            var path = new NavMeshPath();
 
-            NavMeshQueryFilter navMeshQueryFilter = new NavMeshQueryFilter();
-            navMeshQueryFilter.areaMask = NavMesh.AllAreas;
-
-            //Calculate path for specific navmesh agent
-            navMeshQueryFilter.agentTypeID = GetAgentIdByName(navmeshAgentName);
-
-            float maxDistanceFromNavMesh = 1;
-
-            //Get closest point on navmesh
-            if (NavMesh.SamplePosition(targetPoint, out NavMeshHit hit, maxDistanceFromNavMesh, navMeshQueryFilter))
+            var navMeshQueryFilter = new NavMeshQueryFilter
             {
-                //Calculate path
+                areaMask = NavMesh.AllAreas,
+                agentTypeID = GetAgentIdByName(navmeshAgentName)
+            };
+
+            const float maxDistanceFromNavMesh = 1;
+
+            if (NavMesh.SamplePosition(targetPoint, out var hit, maxDistanceFromNavMesh, navMeshQueryFilter))
+            {
                 NavMesh.CalculatePath(transform.position, hit.position, navMeshQueryFilter, path);
             }
             else
@@ -188,31 +156,24 @@ namespace HEAVYART.TopDownShooter.Netcode
             if (Application.isEditor)
                 DrawPath(path.corners, 1, Color.red);
 
-            if (path.corners.Length > 1)
-                return path.corners[1];
-            else
-                //Return character position if path is too short
-                return targetPoint;
+            return path.corners.Length > 1 ? path.corners[1] : targetPoint;
         }
 
-        private void DrawPath(Vector3[] corners, float duration, Color color)
+        private static void DrawPath(Vector3[] corners, float duration, Color color)
         {
-            for (int i = 0; i < corners.Length - 1; i++)
+            for (var i = 0; i < corners.Length - 1; i++)
             {
                 Debug.DrawLine(corners[i], corners[i + 1], color, duration);
             }
         }
 
-        public int GetAgentIdByName(string agentName)
+        private static int GetAgentIdByName(string agentName)
         {
             var count = NavMesh.GetSettingsCount();
-            var agentTypeNames = new string[count];
-
             for (var i = 0; i < count; i++)
             {
                 var id = NavMesh.GetSettingsByIndex(i).agentTypeID;
                 var name = NavMesh.GetSettingsNameFromID(id);
-                agentTypeNames[i] = name;
 
                 if (name == agentName)
                     return id;

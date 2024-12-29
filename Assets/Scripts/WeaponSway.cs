@@ -1,7 +1,3 @@
-/// <summary>
-/// This script belongs to cowsins� as a part of the cowsins� FPS Engine. All rights reserved. 
-/// </summary>
-
 using cowsins;
 using UnityEngine;
 using HEAVYART.TopDownShooter.Netcode;
@@ -17,42 +13,29 @@ public class WeaponSway : MonoBehaviour
     public enum SwayMethod
     {
         Simple,
-        PivotBased
     }
 
     public SwayMethod swayMethod;
 
-    public delegate void Sway();
-
-    public Sway sway;
-
+    private delegate void Sway();
+    private Sway sway;
+    
     #endregion
 
     #region simple
 
     [Header("Position")] [SerializeField] private float amount = 0.02f;
-
     [SerializeField] private float maxAmount = 0.06f;
-
     [SerializeField] private float smoothAmount = 6f;
 
-
     [Header("Tilting")] [SerializeField] private float tiltAmount = 4f;
-
     [SerializeField] private float maxTiltAmount = 5f;
-
     [SerializeField] private float smoothTiltAmount = 12f;
-
     private WeaponController weaponconroller;
-
     private Vector3 initialPosition;
-
     private Quaternion initialRotation;
-
     private float InputX;
-
     private float InputY;
-
     private float playerMultiplier;
 
     #endregion
@@ -60,33 +43,26 @@ public class WeaponSway : MonoBehaviour
     #region pivotBased
 
     [SerializeField] private Transform pivot;
-
     [SerializeField] private float swaySpeed;
-
     [SerializeField] private Vector2 swayMovementAmount;
-
     [SerializeField] private Vector2 swayRotationAmount;
-
     [SerializeField] private float swayTiltAmount;
-
     private PlayerMovement player;
 
     #endregion
 
     private void Start()
     {
-        if (swayMethod == SwayMethod.Simple)
-        {
-            initialPosition = transform.localPosition;
-            initialRotation = transform.localRotation;
-            var topParent = GetTopParent(gameObject);
-            weaponconroller = topParent.GetComponent<WeaponController>();
-            player = topParent.GetComponent<PlayerMovement>();
-            sway = SimpleSway;
-        }
+        if (swayMethod != SwayMethod.Simple) return;
+        initialPosition = transform.localPosition;
+        initialRotation = transform.localRotation;
+        var topParent = GetTopParent(gameObject);
+        weaponconroller = topParent.GetComponent<WeaponController>();
+        player = topParent.GetComponent<PlayerMovement>();
+        sway = SimpleSway;
     }
 
-    GameObject GetTopParent(GameObject obj)
+    private static GameObject GetTopParent(GameObject obj)
     {
         var current = obj.transform;
 
@@ -133,42 +109,10 @@ public class WeaponSway : MonoBehaviour
     private void TiltSway()
     {
         var moveX = Mathf.Clamp(InputX * tiltAmount, -maxTiltAmount, maxTiltAmount) / playerMultiplier;
-
         var finalRotation = Quaternion.Euler(0, 0, moveX);
 
         transform.localRotation = Quaternion.Lerp(transform.localRotation, finalRotation * initialRotation,
             Time.fixedDeltaTime * smoothTiltAmount * playerMultiplier);
-    }
-
-    private void HandleSwayRotation()
-    {
-        var right = Camera.main.transform.right;
-        right.y = 0f;
-        right.Normalize();
-
-        // HANDLE HORIZONTAL ROTATION
-        transform.RotateAround(pivot.position, new Vector3(0, 1, 0),
-            Time.fixedDeltaTime * swayRotationAmount.x * -player.mousex);
-        // HANDLE VERTICAL ROTATION
-        transform.RotateAround(pivot.position, right, Time.fixedDeltaTime * swayRotationAmount.y * player.mousey);
-        // HANDLE TILT ROTATION
-        var swayRot = Quaternion.Lerp(transform.localRotation,
-            Quaternion.Euler(new Vector3(transform.localRotation.eulerAngles.x, transform.localRotation.eulerAngles.y,
-                player.mousex * swayTiltAmount)),
-            Time.deltaTime * swaySpeed);
-
-        swayRot = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(Vector3.zero), Time.deltaTime * swaySpeed);
-
-        transform.localRotation = swayRot;
-    }
-
-    private void HandleSwayLocation()
-    {
-        var finalPosition = new Vector3(-player.mousex, player.mousey, 0) / 100;
-        finalPosition.x = Mathf.Clamp(finalPosition.x, -1, 1) * swayMovementAmount.x;
-        finalPosition.y = Mathf.Clamp(finalPosition.y, -1, 1) * swayMovementAmount.y;
-
-        transform.localPosition = Vector3.Lerp(transform.localPosition, finalPosition, swaySpeed * Time.deltaTime);
     }
 }
 #if UNITY_EDITOR
@@ -184,7 +128,7 @@ public class WeaponSwayEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("swayMethod"));
         EditorGUILayout.Space(10f);
 
-        if (myScript.swayMethod == WeaponSway.SwayMethod.Simple)
+        if (myScript != null && myScript.swayMethod == WeaponSway.SwayMethod.Simple)
         {
             EditorGUI.indentLevel++;
             EditorGUILayout.LabelField("POSITION");
@@ -195,7 +139,6 @@ public class WeaponSwayEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("tiltAmount"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("maxTiltAmount"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("smoothTiltAmount"));
-            EditorGUI.indentLevel--;
         }
         else
         {
@@ -205,11 +148,10 @@ public class WeaponSwayEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("swayMovementAmount"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("swayRotationAmount"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("swayTiltAmount"));
-            EditorGUI.indentLevel--;
         }
 
+        EditorGUI.indentLevel--;
         EditorGUILayout.Space(5f);
-
 
         serializedObject.ApplyModifiedProperties();
     }

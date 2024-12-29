@@ -1,23 +1,18 @@
-/// <summary>
-/// This script belongs to cowsins™ as a part of the cowsins´ FPS Engine. All rights reserved. 
-/// </summary>
-
+using System;
 using System.Collections;
+using cowsins;
+using HEAVYART.TopDownShooter.Netcode;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
-using cowsins;
-using System.Collections.Generic;
-using HEAVYART.TopDownShooter.Netcode;
-using System.Net.Mail;
-using System.Threading;
-using Unity.Netcode;
+using Random = UnityEngine.Random;
 #if UNITY_EDITOR
 using UnityEditor.Presets;
 #endif
 
 #region others
 
-[System.Serializable]
+[Serializable]
 public class Events
 {
     public UnityEvent OnShoot,
@@ -31,13 +26,13 @@ public class Events
         OnEquipWeapon;
 }
 
-[System.Serializable]
+[Serializable]
 public class Effects
 {
     public GameObject grassImpact, metalImpact, mudImpact, woodImpact, enemyImpact;
 }
 
-[System.Serializable]
+[Serializable]
 public class CustomShotMethods
 {
     public Weapon_SO weapon;
@@ -50,10 +45,11 @@ namespace cowsins
 {
     public class WeaponController : NetworkBehaviour
     {
-        //References
-        [SerializeField] SoundMenago soundMenago;
+        public delegate void PerformShootStyle();
 
-        [SerializeField] CamShake CamShake;
+        [SerializeField] private SoundMenago soundMenago;
+
+        [SerializeField] private CamShake CamShake;
 
         [Tooltip("An array that includes all your initial weapons.")]
         public Weapon_SO[] initialWeapons;
@@ -71,33 +67,16 @@ namespace cowsins
         [Tooltip("Attach your camera pivot object")]
         public Transform cameraPivot;
 
-        private Transform[] firePoint;
-
         [Tooltip("Attach your weapon holder")] public Transform weaponHolder;
 
-        //Variables
 
         [Tooltip("max amount of weapons you can have")]
         public int inventorySize;
 
-        [SerializeField, HideInInspector] public bool isAiming;
-
-        private Vector3 aimRot;
-
-        private bool reloading;
-
-        public bool Reloading
-        {
-            get { return reloading; }
-            set { reloading = value; }
-        }
+        [SerializeField] [HideInInspector] public bool isAiming;
 
         [Tooltip("If true you won´t have to press the reload button when you run out of bullets")]
         public bool autoReload;
-
-        private float reloadTime;
-
-        private float coolSpeed;
 
         [Tooltip("If false, hold to aim, and release to stop aiming.")]
         public bool alternateAiming;
@@ -105,7 +84,7 @@ namespace cowsins
         [Tooltip("What objects should be hit")]
         public LayerMask hitLayer;
 
-        [Tooltip("Do you want to resize your crosshair on shooting ? "), SerializeField]
+        [Tooltip("Do you want to resize your crosshair on shooting ? ")] [SerializeField]
         private bool resizeCrosshair;
 
         [Tooltip("Do not draw the crosshair when aiming a weapon")]
@@ -113,24 +92,6 @@ namespace cowsins
 
         [SerializeField] private Animator holsterMotionObject;
 
-        public Animator HolsterMotionObject
-        {
-            get { return holsterMotionObject; }
-        }
-
-        public bool shooting { get; private set; } = false;
-
-        private float spread;
-
-        private float aimingCamShakeMultiplier, crouchingCamShakeMultiplier = 1;
-
-        private float damagePerBullet;
-
-        private float penetrationAmount;
-
-        private float camShakeAmount;
-
-        // Effects
         public Effects effects;
 
         public Events events;
@@ -142,46 +103,75 @@ namespace cowsins
 
         public UnityEvent customMethod;
 
-        // Internal Use
-        private int bulletsPerFire;
-
         public bool canShoot;
-
-        RaycastHit hit;
 
         public int currentWeapon;
 
+        public WeaponIdentification id;
+
+        public bool holding;
+
+        [SerializeField] private UIController UIController;
+
+#if UNITY_EDITOR
+        public Preset crosshairPreset;
+#endif
+
+        [HideInInspector] public bool selectingWeapon;
+
+        private float aimingCamShakeMultiplier, crouchingCamShakeMultiplier = 1;
+
+        private float aimingOutSpeed;
+
+        private float aimingSpeed;
+
+        private Vector3 aimRot;
+
         private AudioClips audioSFX;
 
-        public WeaponIdentification id;
+        private int bulletsPerFire;
+
+        private float camShakeAmount;
+
+        private float coolSpeed;
+
+        private float damagePerBullet;
+
+        private float evaluationProgress, evaluationProgressX;
+
+        private Transform[] firePoint;
+
+        private float fireRate;
+
+        private AudioClip fireSFX;
+
+        private RaycastHit hit;
+
+        private ShooterInputControls inputActions;
+
+        private GameObject muzzleVFX;
+
+        private float penetrationAmount;
+
+        public PerformShootStyle performShootStyle;
+
+        private ReduceAmmo reduceAmmo;
+
+        private Reload reload;
+
+        private float reloadTime;
+
+        private float spread;
 
         private PlayerStats stats;
 
         private WeaponAnimator weaponAnimator;
 
-        private GameObject muzzleVFX;
+        public bool Reloading { get; set; }
 
-        private float fireRate;
+        public Animator HolsterMotionObject => holsterMotionObject;
 
-        public bool holding;
-
-        public delegate void PerformShootStyle();
-
-        public PerformShootStyle performShootStyle;
-
-        private delegate IEnumerator Reload();
-
-        private Reload reload;
-
-        private delegate void ReduceAmmo();
-
-        private ReduceAmmo reduceAmmo;
-
-        private AudioClip fireSFX;
-
-        private ShooterInputControls inputActions;
-
-        [SerializeField] UIController UIController;
+        public bool shooting { get; private set; }
 
         private void Start()
         {
@@ -199,8 +189,6 @@ namespace cowsins
             HandleRecoil();
             HandleHeatRatio();
         }
-
-        private float aimingSpeed;
 
         public void Aim()
         {
@@ -229,7 +217,6 @@ namespace cowsins
             aimingCamShakeMultiplier = 1;
 
             if (id == null) return;
-            // Change the position and FOV
             id.aimPoint.localPosition = Vector3.Lerp(id.aimPoint.localPosition, id.originalAimPointPos,
                 aimingSpeed * Time.deltaTime);
             id.aimPoint.localRotation = Quaternion.Lerp(id.aimPoint.localRotation,
@@ -239,9 +226,6 @@ namespace cowsins
                 Quaternion.Euler(Vector3.zero), aimingOutSpeed * Time.deltaTime);
         }
 
-        /// <summary>
-        /// Forces the Weapon to go back to its initial position 
-        /// </summary>
         public void ForceAimReset()
         {
             isAiming = false;
@@ -265,11 +249,9 @@ namespace cowsins
             crouchingCamShakeMultiplier = 1;
         }
 
-        private float aimingOutSpeed;
-
         private void HandleAimingMotion()
         {
-            aimingOutSpeed = (weapon != null) ? aimingSpeed : 2;
+            aimingOutSpeed = weapon != null ? aimingSpeed : 2;
             if (isAiming && weapon != null)
                 mainCamera.fieldOfView =
                     Mathf.Lerp(mainCamera.fieldOfView, weapon.aimingFOV, aimingSpeed * Time.deltaTime);
@@ -277,19 +259,14 @@ namespace cowsins
 
         private void HandleHitscanProjectileShot()
         {
-            if (!IsOwner || GameManager.Instance.gameState != GameState.ActiveGame)
-            {
-                return;
-            }
+            if (!IsOwner || GameManager.Instance.gameState != GameState.ActiveGame) return;
 
             foreach (var p in firePoint)
             {
-                canShoot = false; // since you have already shot, you will have to wait in order to being able to shoot again
+                canShoot = false;
                 bulletsPerFire = weapon.bulletsPerFire;
                 StartCoroutine(HandleShooting());
 
-                // Adding a layer of realism, bullet shells get instantiated and interact with the world
-                // We should  first check if we really wanna do this
                 if (!weapon.showBulletShells || (int)weapon.shootStyle == 2) continue;
                 var bulletShell = Instantiate(weapon.bulletGraphics, p.position, mainCamera.transform.rotation);
                 var shellRigidbody = bulletShell.GetComponent<Rigidbody>();
@@ -299,30 +276,27 @@ namespace cowsins
                 shellRigidbody.AddForce(shellForce, ForceMode.Impulse);
             }
 
-            if(weapon.timeBetweenShots == 0) soundMenago.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 1, transform.position, false);
+            if (weapon.timeBetweenShots == 0)
+                soundMenago.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 1, transform.position, false);
 
             Invoke(nameof(CanShoot), fireRate);
         }
 
         private void CustomShot()
         {
-            // If we want to use fire Rate
             if (!weapon.continuousFire)
             {
                 canShoot = false;
                 Invoke(nameof(CanShoot), fireRate);
             }
 
-            // Continuous fire
             customMethod?.Invoke();
         }
 
         private void SelectCustomShotMethod()
         {
-            // Iterate through each item in the array
             foreach (var t in customShot)
             {
-                // Assign the on shoot event to the unity event to call it each time we fire
                 if (t.weapon != weapon) continue;
                 customMethod = t.OnShoot;
                 return;
@@ -334,15 +308,11 @@ namespace cowsins
 
         private IEnumerator HandleShooting()
         {
-            /// Determine wether we are sending a raycast, aka hitscan weapon, we are spawning a projectile
             var style = (int)weapon.shootStyle;
-
             weaponAnimator.StopWalkAndRunMotion();
 
-            // Rest the bullets that have just been shot
             reduceAmmo?.Invoke();
 
-            //Determine weapon class / style
             var i = 0;
             while (i < bulletsPerFire)
             {
@@ -351,7 +321,6 @@ namespace cowsins
 
                 CamShake.ShootShake(camShakeAmount * aimingCamShakeMultiplier * crouchingCamShakeMultiplier);
 
-                // Determine if we want to add an effect for FOV
                 if (weapon.applyFOVEffectOnShooting)
                 {
                     var fovAdjustment = isAiming ? weapon.AimingFOVValueToSubtract : weapon.FOVValueToSubtract;
@@ -359,14 +328,13 @@ namespace cowsins
                 }
 
                 foreach (var p in firePoint)
-                {
                     if (muzzleVFX != null)
                         SendFireRPC(p.position, mainCamera.transform.rotation);
-                    //Instantiate(muzzleVFX, p.position, mainCamera.transform.rotation, mainCamera.transform); // VFX
-                }
 
                 CowsinsUtilities.ForcePlayAnim("shooting", inventory[currentWeapon].GetComponentInChildren<Animator>());
-                if(weapon.timeBetweenShots != 0) soundMenago.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 1, transform.position, false);
+                if (weapon.timeBetweenShots != 0)
+                    soundMenago.PlaySound(fireSFX, 0, weapon.pitchVariationFiringSFX, true, 1, transform.position,
+                        false);
 
                 ProgressRecoil();
 
@@ -399,10 +367,6 @@ namespace cowsins
             Instantiate(muzzleVFX, position, rotation);
         }
 
-        /// <summary>
-        /// Hitscan weapons send a raycast that IMMEDIATELY hits the target.
-        /// That is why this shooting method is mostly used for pistols, snipers, rifles or SMGs
-        /// </summary>
         private void HitscanShot()
         {
             events.OnShoot.Invoke();
@@ -411,7 +375,6 @@ namespace cowsins
 
             Transform hitObj;
 
-            //This defines the first hit on the object
             var dir = CowsinsUtilities.GetSpreadDirection(spread, mainCamera);
             var ray = new Ray(mainCamera.transform.position, dir);
 
@@ -420,26 +383,19 @@ namespace cowsins
             Hit(hit.collider.gameObject.layer, dmg, hit, true);
             hitObj = hit.collider.transform;
 
-            //Handle Penetration
             var newRay = new Ray(hit.point, ray.direction);
             RaycastHit newHit;
 
             if (Physics.Raycast(newRay, out newHit, penetrationAmount, hitLayer))
-            {
                 if (hitObj != newHit.collider.transform)
                 {
                     var dmg_ = damagePerBullet * stats.damageMultiplier * weapon.penetrationDamageReduction;
                     Hit(newHit.collider.gameObject.layer, dmg_, newHit, true);
                 }
-            }
 
-            // Handle Bullet Trails
             if (weapon.bulletTrail == null) return;
 
-            foreach (var p in firePoint)
-            {
-                SendTrailRPC(p.position, hit.point);
-            }
+            foreach (var p in firePoint) SendTrailRPC(p.position, hit.point);
         }
 
         [Rpc(SendTo.Everyone)]
@@ -471,11 +427,6 @@ namespace cowsins
             Destroy(trail.gameObject, trail.time);
         }
 
-        /// <summary>
-        /// projectile shooting spawns a projectile
-        /// Add a rigidbody to your bullet gameObject to make a curved trajectory
-        /// This method is pretty much always used for grenades, rocket lFaunchers and grenade launchers.
-        /// </summary>
         private void ProjectileShot()
         {
             events.OnShoot.Invoke();
@@ -483,14 +434,14 @@ namespace cowsins
                 UIController.crosshair.Resize(weapon.crosshairResize * 100);
 
             var ray = mainCamera.ViewportPointToRay(new Vector3(.5f, .5f, 0f));
-            Vector3 destination = (Physics.Raycast(ray, out hit) && !hit.transform.CompareTag("Player"))
+            Vector3 destination = Physics.Raycast(ray, out hit) && !hit.transform.CompareTag("Player")
                 ? destination = hit.point + CowsinsUtilities.GetSpreadDirection(weapon.spreadAmount, mainCamera)
                 : destination = ray.GetPoint(50f) +
                                 CowsinsUtilities.GetSpreadDirection(weapon.spreadAmount, mainCamera);
 
             foreach (var p in firePoint)
             {
-                var bullet = Instantiate(weapon.projectile, p.position, p.transform.rotation) as Bullet;
+                var bullet = Instantiate(weapon.projectile, p.position, p.transform.rotation);
 
                 if (weapon.explosionOnHit) bullet.explosionVFX = weapon.explosionVFX;
 
@@ -501,26 +452,17 @@ namespace cowsins
 
                 bullet.criticalMultiplier = weapon.criticalDamageMultiplier;
                 bullet.destination = destination;
-                bullet.player = this.transform;
+                bullet.player = transform;
                 bullet.speed = weapon.speed;
-                bullet.GetComponent<Rigidbody>().isKinematic = (!weapon.projectileUsesGravity) ? true : false;
+                bullet.GetComponent<Rigidbody>().isKinematic = !weapon.projectileUsesGravity ? true : false;
                 bullet.damage = damagePerBullet * stats.damageMultiplier;
                 bullet.duration = weapon.bulletDuration;
             }
         }
 
-        /// <summary>
-        /// If you landed a shot onto an enemy, a hit will occur
-        /// This is where that is being handled
-        /// </summary>
         private void Hit(LayerMask layer, float damage, RaycastHit h, bool damageTarget)
         {
             events.OnHit.Invoke();
-
-            // Check the passed layer
-            // If it matches any of the provided layers by FPS Engine, then:
-            // Instantiate according effect and rotate it accordingly to the surface.
-            // Instantiate bullet holes as well.
             switch (layer)
             {
                 case int l when l == LayerMask.NameToLayer("MapBorder"):
@@ -535,105 +477,91 @@ namespace cowsins
                     break;
             }
 
-            // Apply damage
-            if (!damageTarget)
-            {
-                return;
-            }
+            if (!damageTarget) return;
 
             var finalDamage = damage * GetDistanceDamageReduction(h.collider.transform);
 
-            // Check if a head shot was landed
             if (h.collider.gameObject.CompareTag("Critical"))
-            {
                 CowsinsUtilities.GatherDamageableParent(h.collider.transform).DamageServerRpc(
                     finalDamage * weapon.criticalDamageMultiplier, true, true, NetworkManager.Singleton.LocalClientId);
-            }
-            // Check if a body shot was landed ( for children colliders )
+
             else if (h.collider.gameObject.CompareTag("BodyShot"))
-            {
                 CowsinsUtilities.GatherDamageableParent(h.collider.transform).DamageServerRpc(finalDamage, false, true,
                     NetworkManager.Singleton.LocalClientId);
-            }
-            // Check if the collision just comes from the parent
+
             else if (h.collider.GetComponent<IDamageable>() != null)
-            {
                 h.collider.GetComponent<IDamageable>().DamageServerRpc(finalDamage, false);
-            }
         }
 
         [Rpc(SendTo.Everyone)]
         private void SpawnImpactRPC(Vector3 position, Vector3 normal, ulong parentNetworkObjectId)
         {
-            // Instantiate the impact effect
-            //var impact = Instantiate(effects.metalImpact, position, Quaternion.LookRotation(normal));   
-
-            // Instantiate the bullet hole
             if (weapon == null || weapon.bulletHoleImpact.groundIMpact == null) return;
             var impactBullet = Instantiate(weapon.bulletHoleImpact.groundIMpact, position,
                 Quaternion.LookRotation(normal));
 
-            // Check if a valid parentNetworkObject exists
             if (parentNetworkObjectId == 0 ||
                 !NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(parentNetworkObjectId,
                     out var parentNetworkObject) ||
                 parentNetworkObject == null) return;
-            // Double-check if the parent is valid
-            if (parentNetworkObject.transform != null && impactBullet != null)
-            {
-                impactBullet.transform.SetParent(parentNetworkObject.transform);
-            }
 
+            if (parentNetworkObject.transform != null && impactBullet != null)
+                impactBullet.transform.SetParent(parentNetworkObject.transform);
         }
 
-        private void CanShoot() => canShoot = true;
+        private void CanShoot()
+        {
+            canShoot = true;
+        }
 
-        private void FinishedSelection() => selectingWeapon = false;
+        private void FinishedSelection()
+        {
+            selectingWeapon = false;
+        }
 
-        public void StartReload() => StartCoroutine(reload());
+        public void StartReload()
+        {
+            StartCoroutine(reload());
+        }
 
-        /// <summary>
-        /// Handle Reloading
-        /// </summary>
         private IEnumerator DefaultReload()
         {
-            // Play reload sound
-            soundMenago.PlaySound(id.bulletsLeftInMagazine == 0 ? weapon.audioSFX.emptyMagReload : weapon.audioSFX.reload, .1f, 0, true, 1, transform.position);
-            reloading = true;
+            soundMenago.PlaySound(
+                id.bulletsLeftInMagazine == 0 ? weapon.audioSFX.emptyMagReload : weapon.audioSFX.reload, .1f, 0, true,
+                1, transform.position);
+            Reloading = true;
             yield return new WaitForSeconds(.001f);
 
-            // Play animation
             CowsinsUtilities.PlayAnim("reloading", inventory[currentWeapon].GetComponentInChildren<Animator>());
 
-            // Wait reloadTime seconds, assigned in the weapon scriptable object.
             yield return new WaitForSeconds(reloadTime);
 
-            // Reload has finished
             events.OnFinishReload.Invoke();
 
             canShoot = true;
-            if (!reloading) yield break;
+            if (!Reloading) yield break;
 
-            // Run custom event
             events.OnReload.Invoke();
 
-            reloading = false;
+            Reloading = false;
 
-            // Set the proper amount of bullets, depending on magazine type.
-            if (!weapon.limitedMagazines) id.bulletsLeftInMagazine = id.magazineSize;
+            if (!weapon.limitedMagazines)
+            {
+                id.bulletsLeftInMagazine = id.magazineSize;
+            }
             else
             {
-                if (id.totalBullets > id.magazineSize) // You can still reload a full magazine
+                if (id.totalBullets > id.magazineSize)
                 {
                     id.totalBullets = id.totalBullets - (id.magazineSize - id.bulletsLeftInMagazine);
                     id.bulletsLeftInMagazine = id.magazineSize;
                 }
-                else if (id.totalBullets == id.magazineSize) // You can only reload a single full magazine more
+                else if (id.totalBullets == id.magazineSize)
                 {
                     id.totalBullets = id.totalBullets - (id.magazineSize - id.bulletsLeftInMagazine);
                     id.bulletsLeftInMagazine = id.magazineSize;
                 }
-                else if (id.totalBullets < id.magazineSize) // You cant reload a whole magazine
+                else if (id.totalBullets < id.magazineSize)
                 {
                     var bulletsLeft = id.bulletsLeftInMagazine;
                     if (id.bulletsLeftInMagazine + id.totalBullets <= id.magazineSize)
@@ -656,61 +584,42 @@ namespace cowsins
 
         private IEnumerator OverheatReload()
         {
-            // Currently reloading
             canShoot = false;
 
-            float waitTime = weapon.cooledPercentageAfterOverheat;
+            var waitTime = weapon.cooledPercentageAfterOverheat;
 
-            // Stop being able to shoot, prevents from glitches
             CancelInvoke(nameof(CanShoot));
 
-            // Wait until the heat ratio is appropriate to keep shooting
             yield return new WaitUntil(() => id.heatRatio <= waitTime);
 
-            // Reload has finished
             events.OnFinishReload.Invoke();
 
-            reloading = false;
+            Reloading = false;
             canShoot = true;
         }
 
-        // On shooting regular reloading weapons, reduce the bullets in the magazine
         private void ReduceDefaultAmmo()
         {
             if (!weapon.infiniteBullets)
             {
                 id.bulletsLeftInMagazine -= weapon.ammoCostPerFire;
-                if (id.bulletsLeftInMagazine < 0)
-                {
-                    id.bulletsLeftInMagazine = 0;
-                }
+                if (id.bulletsLeftInMagazine < 0) id.bulletsLeftInMagazine = 0;
             }
         }
 
-
-        // On shooting overheat reloading weapons, increase the heat ratio.
         private void ReduceOverheatAmmo()
         {
-            id.heatRatio += (float)1f / id.magazineSize;
+            id.heatRatio += 1f / id.magazineSize;
         }
 
-        // Handles overheat weapons reloading.
         private void HandleHeatRatio()
         {
             if (weapon == null || id.magazineSize == 0 || weapon.reloadStyle == ReloadingStyle.defaultReload) return;
 
-            // Handle cooling
-            // Dont keep cooling if it is completely cooled
             if (id.heatRatio > 0) id.heatRatio -= Time.deltaTime * coolSpeed;
             if (id.heatRatio > 1) id.heatRatio = 1;
         }
 
-#if UNITY_EDITOR
-        public Preset crosshairPreset;
-#endif
-        /// <summary>
-        /// Active your new weapon
-        /// </summary>
         public void UnHolster(GameObject weaponObj, bool playAnim)
         {
             canShoot = true;
@@ -718,8 +627,6 @@ namespace cowsins
             weaponObj.SetActive(true);
             id = weaponObj.GetComponent<WeaponIdentification>();
 
-            // Get Shooting Style 
-            // We subscribe our performShootStyle method to different functions depending on the shooting style
             switch ((int)weapon.shootStyle)
             {
                 case 0:
@@ -736,7 +643,7 @@ namespace cowsins
             weaponObj.GetComponentInChildren<Animator>().enabled = true;
             if (playAnim)
                 CowsinsUtilities.PlayAnim("unholster", inventory[currentWeapon].GetComponentInChildren<Animator>());
-            //SoundManager.Instance.PlaySound(weapon.audioSFX.unholster, .1f, 0, true, 0);
+
             Invoke("FinishedSelection", .5f);
 
             if (weapon.shootStyle == ShootStyle.Custom) SelectCustomShotMethod();
@@ -746,7 +653,6 @@ namespace cowsins
 
             weaponAnimator.StopWalkAndRunMotion();
 
-            // Define reloading method
             if (weapon.reloadStyle == ReloadingStyle.defaultReload)
             {
                 reload = DefaultReload;
@@ -761,15 +667,10 @@ namespace cowsins
 
             firePoint = inventory[currentWeapon].FirePoint;
 
-            // UI & OTHERS
             if (weapon.infiniteBullets || weapon.reloadStyle == ReloadingStyle.Overheat)
-            {
                 UIController.DetectReloadMethod(false, !weapon.infiniteBullets);
-            }
             else
-            {
                 UIController.DetectReloadMethod(true, false);
-            }
 
             if ((int)weapon.shootStyle == 2) UIController.DetectReloadMethod(false, false);
 
@@ -778,7 +679,6 @@ namespace cowsins
 
         private void HandleUI()
         {
-            // If we dont own a weapon yet, do not continue
             if (weapon == null)
             {
                 UIController.DisableWeaponUI();
@@ -791,20 +691,16 @@ namespace cowsins
             {
                 if (!weapon.infiniteBullets)
                 {
-                    bool activeReloadUI = id.bulletsLeftInMagazine == 0 && !autoReload && !weapon.infiniteBullets;
-                    bool activeLowAmmoUI = id.bulletsLeftInMagazine < id.magazineSize / 3.5f &&
-                                           id.bulletsLeftInMagazine > 0;
-                    // Set different display settings for each shoot style 
+                    var activeReloadUI = id.bulletsLeftInMagazine == 0 && !autoReload && !weapon.infiniteBullets;
+                    var activeLowAmmoUI = id.bulletsLeftInMagazine < id.magazineSize / 3.5f &&
+                                          id.bulletsLeftInMagazine > 0;
+
                     if (weapon.limitedMagazines)
-                    {
                         UIController.UpdateBullets(id.bulletsLeftInMagazine, id.totalBullets, activeReloadUI,
                             activeLowAmmoUI);
-                    }
                     else
-                    {
                         UIController.UpdateBullets(id.bulletsLeftInMagazine, id.magazineSize, activeReloadUI,
                             activeLowAmmoUI);
-                    }
                 }
                 else
                 {
@@ -816,55 +712,39 @@ namespace cowsins
                 UIController.UpdateHeatRatio(id.heatRatio);
             }
 
+            if (UIController.crosshair == null) return;
 
-            //Crosshair Management
-            // If we dont use a crosshair stop right here
-            if (UIController.crosshair == null)
-            {
-                return;
-            }
-
-            // Detect enemies on aiming
             RaycastHit hit_;
-            if (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit_,
-                    weapon.bulletRange) && hit_.transform.CompareTag("Enemy") ||
-                Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit_,
-                    weapon.bulletRange) && hit_.transform.CompareTag("Critical"))
+            if ((Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit_,
+                    weapon.bulletRange) && hit_.transform.CompareTag("Enemy")) ||
+                (Physics.Raycast(mainCamera.transform.position, mainCamera.transform.forward, out hit_,
+                    weapon.bulletRange) && hit_.transform.CompareTag("Critical")))
                 UIController.crosshair.SpotEnemy(true);
             else UIController.crosshair.SpotEnemy(false);
         }
 
-        /// <summary>
-        /// Procedurally generate the Inventory UI depending on your needs
-        /// </summary>
         private void CreateInventoryUI()
         {
-            // Adjust the inventory size 
             slots = new UISlot[inventorySize];
-            int j = 0; // Control variable
+            var j = 0;
             while (j < inventorySize)
             {
-                // Load the slot, instantiate it and set it to the slots array
                 var slot = Instantiate(UISlotPrefab, Vector3.zero, Quaternion.identity,
-                    UIController.inventoryContainer.transform) as GameObject;
+                    UIController.inventoryContainer.transform);
                 slot.GetComponent<UISlot>().id = j;
                 slots[j] = slot.GetComponent<UISlot>();
                 j++;
             }
         }
 
-        /// <summary>
-        /// Change you current slots, core of the inventory
-        /// </summary>
         public void HandleInventory()
         {
-            if (inputActions.Player.Reloading.IsPressed()) return; // Do not change weapons while reloading
-            // Change slot
+            if (inputActions.Player.Reloading.IsPressed()) return;
             if (inputActions.Player.Scrolling.ReadValue<Vector2>().y > 0 ||
-                inputActions.Player.ChangeWeapons.WasPressedThisFrame() &&
-                inputActions.Player.ChangeWeapons.ReadValue<float>() < 0)
+                (inputActions.Player.ChangeWeapons.WasPressedThisFrame() &&
+                 inputActions.Player.ChangeWeapons.ReadValue<float>() < 0))
             {
-                ForceAimReset(); // Move Weapon back to the original position
+                ForceAimReset();
                 if (currentWeapon < inventorySize - 1)
                 {
                     currentWeapon++;
@@ -873,10 +753,10 @@ namespace cowsins
             }
 
             if (inputActions.Player.Scrolling.ReadValue<Vector2>().y < 0 ||
-                inputActions.Player.ChangeWeapons.WasPressedThisFrame() &&
-                inputActions.Player.ChangeWeapons.ReadValue<float>() > 0)
+                (inputActions.Player.ChangeWeapons.WasPressedThisFrame() &&
+                 inputActions.Player.ChangeWeapons.ReadValue<float>() > 0))
             {
-                ForceAimReset(); // Move Weapon back to the original position
+                ForceAimReset();
                 if (currentWeapon > 0)
                 {
                     currentWeapon--;
@@ -885,19 +765,15 @@ namespace cowsins
             }
         }
 
-        [HideInInspector] public bool selectingWeapon;
-
         public void SelectWeapon()
         {
             canShoot = false;
             selectingWeapon = true;
             UIController.crosshair.SpotEnemy(false);
-            events.OnInventorySlotChanged.Invoke(); // Invoke your custom method
+            events.OnInventorySlotChanged.Invoke();
             weapon = null;
-            // Spawn the appropriate weapon in the inventory
 
-            foreach (WeaponIdentification weapon_ in inventory)
-            {
+            foreach (var weapon_ in inventory)
                 if (weapon_ != null)
                 {
                     weapon_.gameObject.SetActive(false);
@@ -917,10 +793,8 @@ namespace cowsins
 #endif
                     }
                 }
-            }
 
-            // Handle the UI Animations
-            foreach (UISlot slot in slots)
+            foreach (var slot in slots)
             {
                 slot.transform.localScale = slot.initScale;
                 slot.GetComponent<CanvasGroup>().alpha = .2f;
@@ -931,14 +805,14 @@ namespace cowsins
 
             CancelInvoke(nameof(CanShoot));
 
-            events.OnEquipWeapon.Invoke(); // Invoke your custom method
+            events.OnEquipWeapon.Invoke();
         }
 
         private void GetInitialWeapons()
         {
             if (initialWeapons.Length == 0) return;
 
-            int i = 0;
+            var i = 0;
             while (i < initialWeapons.Length)
             {
                 InstantiateWeapon(initialWeapons[i], i, null, null);
@@ -951,32 +825,22 @@ namespace cowsins
         public void InstantiateWeapon(Weapon_SO newWeapon, int inventoryIndex, int? _bulletsLeftInMagazine,
             int? _totalBullets)
         {
-            // Instantiate Weapon
             var weaponPicked = Instantiate(newWeapon.weaponObject, weaponHolder);
             weaponPicked.transform.localPosition = newWeapon.weaponObject.transform.localPosition;
 
-            // Destroy the Weapon if it already exists in the same slot
             if (inventory[inventoryIndex] != null) Destroy(inventory[inventoryIndex].gameObject);
-
-            // Set the Weapon
             inventory[inventoryIndex] = weaponPicked;
 
-            // Select weapon if it is the current Weapon
             if (inventoryIndex == currentWeapon)
-            {
                 weapon = newWeapon;
-            }
             else weaponPicked.gameObject.SetActive(false);
 
-
-            // if _bulletsLeftInMagazine is null, calculate magazine size. If not, simply assign _bulletsLeftInMagazine
-            inventory[inventoryIndex].bulletsLeftInMagazine = _bulletsLeftInMagazine ?? (newWeapon.magazineSize);
+            inventory[inventoryIndex].bulletsLeftInMagazine = _bulletsLeftInMagazine ?? newWeapon.magazineSize;
             inventory[inventoryIndex].totalBullets = _totalBullets ??
                                                      (newWeapon.limitedMagazines
                                                          ? newWeapon.magazineSize * newWeapon.totalMagazines
                                                          : newWeapon.magazineSize);
 
-            //UI
             slots[inventoryIndex].weapon = newWeapon;
             slots[inventoryIndex].GetImage();
 #if UNITY_EDITOR
@@ -992,28 +856,19 @@ namespace cowsins
             if (inventoryIndex == currentWeapon) SelectWeapon();
         }
 
-        public void ReleaseCurrentWeapon()
-        {
-            Destroy(inventory[currentWeapon].gameObject);
-            weapon = null;
-            slots[currentWeapon].weapon = null;
-        }
-
         private float GetDistanceDamageReduction(Transform target)
         {
             if (!weapon.applyDamageReductionBasedOnDistance) return 1;
             if (Vector3.Distance(target.position, transform.position) > weapon.minimumDistanceToApplyDamageReduction)
-                return (weapon.minimumDistanceToApplyDamageReduction /
-                        Vector3.Distance(target.position, transform.position)) * weapon.damageReductionMultiplier;
-            else return 1;
+                return weapon.minimumDistanceToApplyDamageReduction /
+                    Vector3.Distance(target.position, transform.position) * weapon.damageReductionMultiplier;
+            return 1;
         }
 
         private void ManageWeaponMethodsInputs()
         {
-            if (!inputActions.Player.Firing.IsPressed()) holding = false; // Making sure we are not holding}
+            if (!inputActions.Player.Firing.IsPressed()) holding = false;
         }
-
-        private float evaluationProgress, evaluationProgressX;
 
         private void HandleRecoil()
         {
@@ -1024,9 +879,8 @@ namespace cowsins
                 return;
             }
 
-            // Going back to normal shooting; 
-            float speed = (weapon == null) ? 10 : weapon.recoilRelaxSpeed * 3;
-            if (!inputActions.Player.Firing.IsPressed() || reloading || !PlayerStats.Controllable)
+            var speed = weapon == null ? 10 : weapon.recoilRelaxSpeed * 3;
+            if (!inputActions.Player.Firing.IsPressed() || Reloading || !PlayerStats.Controllable)
             {
                 cameraPivot.localRotation = Quaternion.Lerp(cameraPivot.localRotation, Quaternion.Euler(Vector3.zero),
                     speed * Time.deltaTime);
@@ -1034,14 +888,14 @@ namespace cowsins
                 evaluationProgressX = 0;
             }
 
-            if (weapon == null || reloading || !PlayerStats.Controllable) return;
+            if (weapon == null || Reloading || !PlayerStats.Controllable) return;
 
             if (inputActions.Player.Firing.IsPressed())
             {
-                float xamount = (weapon.applyDifferentRecoilOnAiming && isAiming)
+                var xamount = weapon.applyDifferentRecoilOnAiming && isAiming
                     ? weapon.xRecoilAmountOnAiming
                     : weapon.xRecoilAmount;
-                float yamount = (weapon.applyDifferentRecoilOnAiming && isAiming)
+                var yamount = weapon.applyDifferentRecoilOnAiming && isAiming
                     ? weapon.yRecoilAmountOnAiming
                     : weapon.yRecoilAmount;
 
@@ -1072,30 +926,32 @@ namespace cowsins
 
         private void GetAttachmentsModifiers()
         {
-            // Grab references for the variables in case their respective attachments are null or not.
-
             fireSFX = weapon.audioSFX.shooting[Random.Range(0, weapon.audioSFX.shooting.Length - 1)];
 
             aimRot = weapon.aimingRotation;
             muzzleVFX = weapon.muzzleVFX;
 
-            float baseReloadTime = weapon.reloadTime;
+            var baseReloadTime = weapon.reloadTime;
             reloadTime = baseReloadTime;
 
-            float baseAimSpeed = weapon.aimingSpeed;
+            var baseAimSpeed = weapon.aimingSpeed;
             aimingSpeed = baseAimSpeed;
 
-            float baseFireRate = weapon.fireRate;
+            var baseFireRate = weapon.fireRate;
             fireRate = baseFireRate;
 
-            float baseDamagePerBullet = weapon.damagePerBullet;
+            var baseDamagePerBullet = weapon.damagePerBullet;
             damagePerBullet = baseDamagePerBullet;
 
-            float baseCamShakeAmount = weapon.camShakeAmount;
+            var baseCamShakeAmount = weapon.camShakeAmount;
             camShakeAmount = baseCamShakeAmount;
 
-            float basePenetrationAmount = weapon.penetrationAmount;
+            var basePenetrationAmount = weapon.penetrationAmount;
             penetrationAmount = basePenetrationAmount;
         }
+
+        private delegate IEnumerator Reload();
+
+        private delegate void ReduceAmmo();
     }
 }

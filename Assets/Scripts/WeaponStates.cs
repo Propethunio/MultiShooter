@@ -37,16 +37,5 @@ namespace cowsins
         {
             _currentState.FixedUpdateState();
         }
-
-        /// <summary>
-        /// Force to change a Weapon state by passing the desired new state.
-        /// </summary>
-        /// <param name="newState"></param>
-        public void ForceChangeState(WeaponBaseState newState)
-        {
-            _currentState.ExitState();
-            _currentState = newState;
-            _currentState.EnterState();
-        }
     }
 }

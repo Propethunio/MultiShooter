@@ -54,18 +54,6 @@ namespace cowsins
             constraint.SetSource(0, newConstraintSource);
         }
 
-        public void ResetConstraint()
-        {
-            var newConstraintSource = new ConstraintSource();
-
-            newConstraintSource.sourceTransform = aimPoint;
-
-            if (constraint == null)
-                constraint = GetComponentInChildren<ParentConstraint>();
-
-            constraint.SetSource(0, newConstraintSource);
-        }
-
 
 #if UNITY_EDITOR
 

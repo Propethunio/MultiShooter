@@ -85,7 +85,7 @@ namespace cowsins
 
         private void Start()
         {
-            inputActions = player.inputActions;
+            inputActions = player.InputActions;
             StartCoroutine(ShowCrosshair());
         }
 
@@ -115,7 +115,7 @@ namespace cowsins
                         10); // if this is not the current spread, fall back to the original one
 
             // Manage different sizes
-            if (player.grounded)
+            if (player.Grounded)
             {
                 if (player.currentSpeed == player.runSpeed) Resize(runSpread);
                 else

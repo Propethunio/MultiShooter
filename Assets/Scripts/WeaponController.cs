@@ -188,7 +188,7 @@ namespace cowsins
             InitialSettings();
             CreateInventoryUI();
             GetInitialWeapons();
-            inputActions = gameObject.GetComponent<PlayerMovement>().inputActions;
+            inputActions = gameObject.GetComponent<PlayerMovement>().InputActions;
         }
 
         private void Update()

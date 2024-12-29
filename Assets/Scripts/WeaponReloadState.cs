@@ -21,7 +21,7 @@ namespace cowsins
             stats = _ctx.GetComponent<PlayerStats>();
             controller.StartReload();
 
-            inputActions = _ctx.GetComponent<PlayerMovement>().inputActions;
+            inputActions = _ctx.GetComponent<PlayerMovement>().InputActions;
         }
 
         public override void UpdateState()

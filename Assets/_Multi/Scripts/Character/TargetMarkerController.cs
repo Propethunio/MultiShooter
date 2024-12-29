@@ -12,64 +12,54 @@ namespace HEAVYART.TopDownShooter.Netcode
         public float aimingDistance = 10;
         public Renderer targetMarker;
 
-        public bool isLocalPlayer => identityControl.IsLocalPlayer;
+        private bool IsLocalPlayer => _identityControl.IsLocalPlayer;
 
-        private CharacterIdentityControl identityControl;
-        private WeaponControlSystem weaponControlSystem;
+        private CharacterIdentityControl _identityControl;
+        private WeaponControlSystem _weaponControlSystem;
 
-        private float lastActivationTime = 0;
+        private float _lastActivationTime;
 
-        private Color targetMarkerDefaultColor;
-        private Color targetMarkerInactiveColor;
+        private Color _targetMarkerDefaultColor;
+        private Color _targetMarkerInactiveColor;
 
         private void Awake()
         {
-            identityControl = GetComponent<CharacterIdentityControl>();
-            weaponControlSystem = GetComponent<WeaponControlSystem>();
+            _identityControl = GetComponent<CharacterIdentityControl>();
+            _weaponControlSystem = GetComponent<WeaponControlSystem>();
 
             targetMarker.gameObject.SetActive(true);
 
-            targetMarkerDefaultColor = targetMarker.material.color;
-            targetMarkerInactiveColor = targetMarkerDefaultColor;
-            targetMarkerInactiveColor.a = 0;
+            _targetMarkerDefaultColor = targetMarker.material.color;
+            _targetMarkerInactiveColor = _targetMarkerDefaultColor;
+            _targetMarkerInactiveColor.a = 0;
         }
 
         private void FixedUpdate()
         {
-            //Start fade
-            if (Time.time > lastActivationTime + activityDuration)
+            if (Time.time > _lastActivationTime + activityDuration)
             {
-                //End fade and turn off marker
-                if (Time.time > lastActivationTime + activityDuration + fadeDuration)
+                if (Time.time > _lastActivationTime + activityDuration + fadeDuration)
                     targetMarker.gameObject.SetActive(false);
                 else
-                    targetMarker.material.color = Color.Lerp(targetMarker.material.color, targetMarkerInactiveColor, colorLerpFactor); //Fade (lerp color)
+                    targetMarker.material.color = Color.Lerp(targetMarker.material.color, _targetMarkerInactiveColor, colorLerpFactor);
             }
 
-            //Check targets in line of sight
-            if (Physics.Raycast(weaponControlSystem.lineOfSightTransform.position, weaponControlSystem.lineOfSightTransform.forward, out RaycastHit hit, aimingDistance))
-            {
-                TargetMarkerController otherCharacter = hit.transform.GetComponent<TargetMarkerController>();
+            if (!Physics.Raycast(_weaponControlSystem.lineOfSightTransform.position,
+                    _weaponControlSystem.lineOfSightTransform.forward, out var hit, aimingDistance)) return;
+            
+            var otherCharacter = hit.transform.GetComponent<TargetMarkerController>();
 
-                //Target found
-                if (otherCharacter != null)
-                {
-                    //Marker could be enabled in two cases:
-                    //1. We enable in on any other character (bot or player).
-                    //2. Someone enabled it on us.
-                    //Bots and other players can't enable it on each other, because it's suppose to be a local marker, related to current player only. 
-                    if (identityControl.IsLocalPlayer || otherCharacter.isLocalPlayer)
-                        otherCharacter.EnableTargetMarker(); //Enable marker 
-                }
-            }
+            if (otherCharacter == null) return;
+            if (_identityControl.IsLocalPlayer || otherCharacter.IsLocalPlayer)
+                otherCharacter.EnableTargetMarker();
         }
 
-        public void EnableTargetMarker()
+        private void EnableTargetMarker()
         {
-            lastActivationTime = Time.time;
+            _lastActivationTime = Time.time;
 
             targetMarker.gameObject.SetActive(true);
-            targetMarker.material.color = targetMarkerDefaultColor;
+            targetMarker.material.color = _targetMarkerDefaultColor;
         }
     }
 }

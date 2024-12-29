@@ -17,7 +17,7 @@ namespace cowsins
 
         private void Update()
         {
-            if (!player.grounded)
+            if (!player.Grounded)
             {
                 motion2 = 0;
                 motion += Time.deltaTime * evaluationSpeed;

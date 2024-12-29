@@ -38,7 +38,7 @@ namespace cowsins
             holdProgress = 0;
             holdingEmpty = false;
 
-            inputActions = player.inputActions;
+            inputActions = player.InputActions;
         }
 
 

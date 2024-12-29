@@ -317,7 +317,7 @@ namespace cowsins
         /// </summary>
         private void ManageFallDamage()
         {
-            switch (player.grounded)
+            switch (player.Grounded)
             {
                 // Grab current player height
                 case false when transform.position.y > height:

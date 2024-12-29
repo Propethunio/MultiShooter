@@ -20,7 +20,7 @@ namespace cowsins
         {
             player = _ctx.GetComponent<PlayerMovement>();
             stats = _ctx.GetComponent<PlayerStats>();
-            inputActions = player.inputActions;
+            inputActions = player.InputActions;
         }
 
         public override void UpdateState()
@@ -46,13 +46,13 @@ namespace cowsins
 
             // Check Jump
             if (player.ReadyToJump && inputActions.Player.Jumping.WasPressedThisFrame() &&
-                (player.grounded || player.canCoyote))
+                (player.Grounded || player.canCoyote))
                 SwitchState(_factory.Jump());
         }
 
         private void HandleMovement()
         {
-            if (player.x != 0 || player.y != 0) player.events.OnMove.Invoke();
+            if (player.x != 0 || player.y != 0) player.events.onMove.Invoke();
             if (!stats.controllable) return;
             player.Look();
             player.FootSteps();

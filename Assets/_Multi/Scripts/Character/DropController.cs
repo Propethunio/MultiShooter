@@ -7,43 +7,38 @@ namespace HEAVYART.TopDownShooter.Netcode
 {
     public class DropController : NetworkBehaviour
     {
-        private List<PickUpItemController> dropElements = new List<PickUpItemController>();
-        private float dropChance;
+        private List<PickUpItemController> _dropElements = new();
+        private float _dropChance;
 
-        private CharacterIdentityControl identityControl;
+        private CharacterIdentityControl _identityControl;
 
         private void Start()
         {
-            identityControl = GetComponent<CharacterIdentityControl>();
+            _identityControl = GetComponent<CharacterIdentityControl>();
 
-            if (identityControl.IsPlayer == true) //Set player drop settings
+            if (_identityControl.IsPlayer)
             {
-                int modelIndex = identityControl.spawnParameters.Value.ModelIndex;
-                dropElements = SettingsManager.Instance.player.configs[modelIndex].dropElements;
-                dropChance = SettingsManager.Instance.player.configs[modelIndex].dropChance;
+                var modelIndex = _identityControl.spawnParameters.Value.ModelIndex;
+                _dropElements = SettingsManager.Instance.player.configs[modelIndex].dropElements;
+                _dropChance = SettingsManager.Instance.player.configs[modelIndex].dropChance;
             }
-            else //Set bot drop settings
+            else
             {
-                int modelIndex = identityControl.spawnParameters.Value.ModelIndex;
-                dropElements = SettingsManager.Instance.ai.configs[modelIndex].dropElements;
-                dropChance = SettingsManager.Instance.ai.configs[modelIndex].dropChance;
+                var modelIndex = _identityControl.spawnParameters.Value.ModelIndex;
+                _dropElements = SettingsManager.Instance.ai.configs[modelIndex].dropElements;
+                _dropChance = SettingsManager.Instance.ai.configs[modelIndex].dropChance;
             }
         }
 
         public void Drop()
         {
-            if (IsServer)
-            {
-                if (dropChance > Random.Range(0, 100))
-                {
-                    int elementID = Random.Range(0, dropElements.Count);
-                    Vector3 offset = Vector3.up * 0.5f;
+            if (!IsServer) return;
+            if (!(_dropChance > Random.Range(0, 100))) return;
+            var elementID = Random.Range(0, _dropElements.Count);
+            var offset = Vector3.up * 0.5f;
 
-                    //Spawn random drop element
-                    GameObject dropGameObject = Instantiate(dropElements[elementID].gameObject, transform.position + offset, Quaternion.identity);
-                    dropGameObject.GetComponent<NetworkObject>().Spawn(true);
-                }
-            }
+            var dropGameObject = Instantiate(_dropElements[elementID].gameObject, transform.position + offset, Quaternion.identity);
+            dropGameObject.GetComponent<NetworkObject>().Spawn(true);
         }
     }
 }

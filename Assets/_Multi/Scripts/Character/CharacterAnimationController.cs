@@ -60,7 +60,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         private void LateUpdate()
         {
-            if (_healthController.isAlive == false)
+            if (_healthController.IsAlive == false)
                 return;
 
             animator.SetFloat(Movement, 0);

@@ -7,30 +7,28 @@ namespace HEAVYART.TopDownShooter.Netcode
 {
     public class CommandReceiver : NetworkBehaviour
     {
-        private ModifiersControlSystem modifiersControlSystem;
+        private ModifiersControlSystem _modifiersControlSystem;
 
         private void Awake()
         {
-            modifiersControlSystem = GetComponent<ModifiersControlSystem>();
+            _modifiersControlSystem = GetComponent<ModifiersControlSystem>();
         }
 
         [Rpc(SendTo.Everyone)]
         public void ReceiveBulletHitRpc(ModifierBase[] modifiers, ulong ownerID, double startTime)
         {
-            //Receive
-            for (int i = 0; i < modifiers.Length; i++)
+            foreach (var t in modifiers)
             {
-                modifiersControlSystem.AddModifier(modifiers[i], ownerID, startTime);
+                _modifiersControlSystem.AddModifier(t, ownerID, startTime);
             }
         }
 
         [Rpc(SendTo.Everyone)]
         public void ReceiveModifiersRpc(ModifierBase[] modifiers, ulong ownerID, double startTime)
         {
-            //Receive
-            for (int i = 0; i < modifiers.Length; i++)
+            foreach (var t in modifiers)
             {
-                modifiersControlSystem.AddModifier(modifiers[i], ownerID, startTime);
+                _modifiersControlSystem.AddModifier(t, ownerID, startTime);
             }
         }
     }

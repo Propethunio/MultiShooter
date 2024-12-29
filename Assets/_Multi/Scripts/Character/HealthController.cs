@@ -8,53 +8,47 @@ namespace HEAVYART.TopDownShooter.Netcode
 {
     public class HealthController : NetworkBehaviour
     {
-        public float currentHealth { get; private set; }
-        public float maxHealth { get; private set; }
+        private float CurrentHealth { get; set; }
+        private float MaxHealth { get; set; }
 
-        public bool isAlive => currentHealth > 0;
+        public bool IsAlive => CurrentHealth > 0;
 
         public Action OnDeath;
 
-        private ModifiersControlSystem modifiersControlSystem;
-        private CharacterIdentityControl identityControl;
+        private ModifiersControlSystem _modifiersControlSystem;
+        private CharacterIdentityControl _identityControl;
 
         public void Awake()
         {
-            modifiersControlSystem = GetComponent<ModifiersControlSystem>();
-            identityControl = GetComponent<CharacterIdentityControl>();
+            _modifiersControlSystem = GetComponent<ModifiersControlSystem>();
+            _identityControl = GetComponent<CharacterIdentityControl>();
         }
 
         public void Initialize(float maxHealth)
         {
-            currentHealth = maxHealth;
-            this.maxHealth = maxHealth;
+            CurrentHealth = maxHealth;
+            MaxHealth = maxHealth;
         }
 
         private void FixedUpdate()
         {
-            if (isAlive == false) return;
+            if (IsAlive == false) return;
 
-            //Update health
-            float updatedHealth = modifiersControlSystem.HandleHealthModifiers(currentHealth, OnDeathEvent);
-            currentHealth = Mathf.Clamp(updatedHealth, 0, maxHealth);
+            var updatedHealth = _modifiersControlSystem.HandleHealthModifiers(CurrentHealth, OnDeathEvent);
+            CurrentHealth = Mathf.Clamp(updatedHealth, 0, MaxHealth);
         }
 
         private void OnDeathEvent(ActiveModifierData activeModifier)
         {
-            //Broadcast death event
-            if (identityControl.IsOwner == true)
-                ConfirmCharacterDeathRpc(activeModifier.ownerID);
+            if (_identityControl.IsOwner)
+                ConfirmCharacterDeathRpc();
         }
 
         [Rpc(SendTo.Everyone)]
-        private void ConfirmCharacterDeathRpc(ulong killerID)
+        private void ConfirmCharacterDeathRpc()
         {
-            currentHealth = 0;
+            CurrentHealth = 0;
             OnDeath?.Invoke();
-
-            //Register bot death (from player)
-            //if (identityControl.isBot == true && killerID != SettingsManager.Instance.ai.defaultOwnerID)
-               // GameManager.Instance.RegisterCharacterDeath(killerID);
         }
     }
 }

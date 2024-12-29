@@ -66,7 +66,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
             if (GameManager.Instance.gameState == GameState.GameIsOver) _rigidbodyCharacterController.Stop();
 
-            if (_healthController.isAlive == false) _rigidbodyCharacterController.Stop();
+            if (_healthController.IsAlive == false) _rigidbodyCharacterController.Stop();
 
             if (GameManager.Instance.gameState != GameState.ActiveGame) return;
 
@@ -105,7 +105,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         private IEnumerator RunUpdateTargetLoop()
         {
-            while (_healthController.isAlive)
+            while (_healthController.IsAlive)
             {
                 _targetTransform = FindNearestTarget();
                 yield return new WaitForSeconds(_targetUpdateRate);

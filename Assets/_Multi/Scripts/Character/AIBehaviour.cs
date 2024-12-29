@@ -29,8 +29,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         private Transform _targetTransform;
         private Vector3 _moveToPoint;
-        private float _lastPointUpdateTime = 0;
-
+        private float _lastPointUpdateTime;
 
         private void Start()
         {

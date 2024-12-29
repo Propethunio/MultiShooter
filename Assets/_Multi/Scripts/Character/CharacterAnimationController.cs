@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 namespace HEAVYART.TopDownShooter.Netcode
 {
     public class CharacterAnimationController : MonoBehaviour
     {
+        private static readonly int Death = Animator.StringToHash("Death");
+        private static readonly int Fire = Animator.StringToHash("Fire");
+        private static readonly int Movement = Animator.StringToHash("Movement");
+        private static readonly int MovementSpeedMultiplier = Animator.StringToHash("MovementSpeedMultiplier");
         public Animator animator;
 
         [Space]
@@ -17,73 +20,65 @@ namespace HEAVYART.TopDownShooter.Netcode
         public float rotationSmoothness = 5;
         public float layerSwitchSmoothness = 10f;
 
-        private Transform targetingTransform;
+        private Transform _targetingTransform;
         public Transform lineOfSightTransform;
 
-        private Transform spine;
-        private Transform chest;
-        private Transform upperChest;
+        private Transform _spine;
+        private Transform _chest;
+        private Transform _upperChest;
 
-        private Vector3 movementDirection;
-        private float movementSpeed;
-        private Vector3 previousPosition;
-        private List<Vector3> directions;
+        private Vector3 _movementDirection;
+        private float _movementSpeed;
+        private Vector3 _previousPosition;
+        private List<Vector3> _directions;
 
-        private HealthController healthController;
-        private ModifiersControlSystem modifiersControlSystem;
-        private CharacterIKController iKController;
+        private HealthController _healthController;
+        private ModifiersControlSystem _modifiersControlSystem;
 
-        private float[] animatorLayerWeights;
+        private float[] _animatorLayerWeights;
 
-        void Awake()
+        private void Awake()
         {
-            spine = animator.GetBoneTransform(HumanBodyBones.Spine);
-            chest = animator.GetBoneTransform(HumanBodyBones.Chest);
-            upperChest = animator.GetBoneTransform(HumanBodyBones.UpperChest);
+            _spine = animator.GetBoneTransform(HumanBodyBones.Spine);
+            _chest = animator.GetBoneTransform(HumanBodyBones.Chest);
+            _upperChest = animator.GetBoneTransform(HumanBodyBones.UpperChest);
 
             lineOfSightTransform = transform.root.GetComponent<WeaponControlSystem>().lineOfSightTransform;
 
-            previousPosition = transform.position;
-            movementDirection = Vector3.forward;
-            movementSpeed = 0;
+            _previousPosition = transform.position;
+            _movementDirection = Vector3.forward;
+            _movementSpeed = 0;
 
-            //Available body directions (for idle pose)
-            directions = new List<Vector3>() { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
+            _directions = new List<Vector3>() { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
 
-            modifiersControlSystem = GetComponent<ModifiersControlSystem>();
-            healthController = GetComponent<HealthController>();
-            healthController.OnDeath += PlayDeathAnimation;
+            _modifiersControlSystem = GetComponent<ModifiersControlSystem>();
+            _healthController = GetComponent<HealthController>();
+            _healthController.OnDeath += PlayDeathAnimation;
 
-            iKController = animator.transform.GetComponent<CharacterIKController>();
-
-            animatorLayerWeights = new float[animator.layerCount];
+            _animatorLayerWeights = new float[animator.layerCount];
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
-            if (healthController.isAlive == false)
+            if (_healthController.isAlive == false)
                 return;
 
-            animator.SetFloat("Movement", 0);
+            animator.SetFloat(Movement, 0);
+            animator.SetFloat(MovementSpeedMultiplier, _modifiersControlSystem.CalculateSpeedMultiplier());
 
-            //Set movement animation speed
-            animator.SetFloat("MovementSpeedMultiplier", modifiersControlSystem.CalculateSpeedMultiplier());
+            var targetRotation = Quaternion.LookRotation(FindClosestDirection(lineOfSightTransform.forward));
 
-            Quaternion targetRotation = Quaternion.LookRotation(FindClosestDirection(lineOfSightTransform.forward));
-
-            if(movementSpeed > 0.05f) // If character moves
+            if(_movementSpeed > 0.05f)
             {
-                bool isOppositeDirections = Vector3.Dot(movementDirection, lineOfSightTransform.forward) < 0;
-
-                animator.SetFloat("Movement", isOppositeDirections ? -1 : 1);
+                var isOppositeDirections = Vector3.Dot(_movementDirection, lineOfSightTransform.forward) < 0;
+                animator.SetFloat(Movement, isOppositeDirections ? -1 : 1);
             }
 
             animator.transform.rotation = Quaternion.Slerp(animator.transform.rotation, targetRotation, rotationSmoothness * Time.deltaTime);
 
-            //Rotate skeleton parts
-            HandleAiming(spine, spineWeight);
-            HandleAiming(chest, chestWeight);
-            HandleAiming(upperChest, upperChestWeight);
+            HandleAiming(_spine, spineWeight);
+            HandleAiming(_chest, chestWeight);
+            HandleAiming(_upperChest, upperChestWeight);
         }
 
         private void HandleAiming(Transform bone, float weight)
@@ -91,110 +86,84 @@ namespace HEAVYART.TopDownShooter.Netcode
             if (bone == null)
                 return;
 
-            //Upper body will be pointed in the line of sight. Weapon will be pointed at targetingTransform.
-            Vector3 horizontalLineOfSight = targetingTransform.position - lineOfSightTransform.position;
+            var horizontalLineOfSight = _targetingTransform.position - lineOfSightTransform.position;
             horizontalLineOfSight.Normalize();
 
-            Quaternion boneRotation = Quaternion.FromToRotation(animator.transform.forward, horizontalLineOfSight);
+            var boneRotation = Quaternion.FromToRotation(animator.transform.forward, horizontalLineOfSight);
             bone.rotation = Quaternion.Slerp(Quaternion.identity, boneRotation, weight) * bone.rotation;
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
-            //Calculate movement speed and direction for further using in animation algorithms
+            var movementDelta = transform.position - _previousPosition;
+            _movementSpeed = movementDelta.magnitude;
 
-            Vector3 movementDelta = transform.position - previousPosition;
-
-            //Set movement speed
-            movementSpeed = movementDelta.magnitude;
-
-            if (movementSpeed > 0.01f)
+            if (_movementSpeed > 0.01f)
             {
-                //Set movement direction 
-                movementDirection.y = 0;
-                movementDirection = movementDelta.normalized;
+                _movementDirection.y = 0;
+                _movementDirection = movementDelta.normalized;
             }
 
-            previousPosition = transform.position;
+            _previousPosition = transform.position;
 
-            //Handle layer switch smoothness
-            for (int i = 1; i < animatorLayerWeights.Length; i++)
+            for (var i = 1; i < _animatorLayerWeights.Length; i++)
             {
-                float weight = Mathf.MoveTowards(animator.GetLayerWeight(i), animatorLayerWeights[i], layerSwitchSmoothness * Time.fixedDeltaTime);
+                var weight = Mathf.MoveTowards(animator.GetLayerWeight(i), _animatorLayerWeights[i], layerSwitchSmoothness * Time.fixedDeltaTime);
                 animator.SetLayerWeight(i, weight);
             }
         }
 
         public void PlayFireAnimation()
         {
-            //Play fire animation
-            animator.SetTrigger("Fire");
+            animator.SetTrigger(Fire);
         }
 
         public void PlayDeathAnimation()
         {
-            for (int i = 1; i < animatorLayerWeights.Length; i++)
+            for (var i = 1; i < _animatorLayerWeights.Length; i++)
             {
-                animatorLayerWeights[i] = 0;
+                _animatorLayerWeights[i] = 0;
                 animator.SetLayerWeight(i, 0);
             }
 
-            //Play death animation
-            animator.SetTrigger("Death");
+            animator.SetTrigger(Death);
         }
 
         public void UpdateWeaponGrip(WeaponGrip weaponGrip, Transform leftHandGripIKTransform)
         {
-            //Handle IK
-            if (iKController != null)
+            for (var i = 1; i < _animatorLayerWeights.Length; i++)
             {
-                //Apply IK parameters for left hand
-                iKController.UpdateLeftHandGripTransform(leftHandGripIKTransform);
+                _animatorLayerWeights[i] = 0;
             }
 
-            for (int i = 1; i < animatorLayerWeights.Length; i++)
-            {
-                animatorLayerWeights[i] = 0;
-            }
-
-            //Turn on required layer
             if (weaponGrip == WeaponGrip.Rifle)
             {
-                animatorLayerWeights[1] = 1;
-                animatorLayerWeights[3] = 1;
+                _animatorLayerWeights[1] = 1;
+                _animatorLayerWeights[3] = 1;
             }
 
-            //Turn on required layer
-            if (weaponGrip == WeaponGrip.Pistol)
-            {
-                animatorLayerWeights[0] = 1;
-                animatorLayerWeights[2] = 1;
-            }
+            if (weaponGrip != WeaponGrip.Pistol) return;
+            _animatorLayerWeights[0] = 1;
+            _animatorLayerWeights[2] = 1;
         }
 
         public void SetTargetingTransform(Transform targetingTransform)
         {
-            this.targetingTransform = targetingTransform;
+            this._targetingTransform = targetingTransform;
         }
 
         private Vector3 FindClosestDirection(Vector3 directionToCompareWith)
         {
-            //Find closest direction, to use it when character stands
+            var closestDirection = _directions[0];
+            var closestDotProduct = Vector3.Dot(_directions[0], directionToCompareWith);
 
-            Vector3 closestDirection = directions[0];
-            float closestDotProduct = Vector3.Dot(directions[0], directionToCompareWith);
-
-            for (int i = 1; i < directions.Count; i++)
+            for (var i = 1; i < _directions.Count; i++)
             {
-                //Returns values between (approximately) -1 and 1. The closer two directions the bigger result value.
-                float dotProduct = Vector3.Dot(directions[i], directionToCompareWith);
+                var dotProduct = Vector3.Dot(_directions[i], directionToCompareWith);
 
-                //Find the biggest one (closest direction)
-                if (dotProduct > closestDotProduct)
-                {
-                    closestDirection = directions[i];
-                    closestDotProduct = dotProduct;
-                }
+                if (!(dotProduct > closestDotProduct)) continue;
+                closestDirection = _directions[i];
+                closestDotProduct = dotProduct;
             }
 
             return closestDirection;

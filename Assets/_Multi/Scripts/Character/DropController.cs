@@ -16,7 +16,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         {
             identityControl = GetComponent<CharacterIdentityControl>();
 
-            if (identityControl.isPlayer == true) //Set player drop settings
+            if (identityControl.IsPlayer == true) //Set player drop settings
             {
                 int modelIndex = identityControl.spawnParameters.Value.modelIndex;
                 dropElements = SettingsManager.Instance.player.configs[modelIndex].dropElements;

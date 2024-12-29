@@ -10,25 +10,20 @@ namespace HEAVYART.TopDownShooter.Netcode
         public float colorFactor = 0.5f;
         public List<Renderer> renderers = new List<Renderer>();
 
-        private CharacterIdentityControl identityControl;
+        private CharacterIdentityControl _identityControl;
 
         private void Awake()
         {
-            identityControl = GetComponent<CharacterIdentityControl>();
+            _identityControl = GetComponent<CharacterIdentityControl>();
         }
 
         public override void OnNetworkSpawn()
         {
-            if (identityControl.isPlayer)
+            if (!_identityControl.IsPlayer) return;
+            var targetColor = _identityControl.spawnParameters.Value.color;
+            foreach (var t in renderers)
             {
-                //Get color
-                Color targetColor = identityControl.spawnParameters.Value.color;
-
-                for (int i = 0; i < renderers.Count; i++)
-                {
-                    //Set color
-                    renderers[i].material.color = Color.Lerp(renderers[i].material.color, targetColor, colorFactor);
-                }
+                t.material.color = Color.Lerp(t.material.color, targetColor, colorFactor);
             }
         }
     }

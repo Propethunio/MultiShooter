@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,36 +5,33 @@ namespace HEAVYART.TopDownShooter.Netcode
 {
     public class CharacterIdentityControl : NetworkBehaviour
     {
-        //Since we use scene objects as players, we need some tool to recognize if its player or bot 
+        public bool IsPlayer { get; private set; }
+        public bool IsBot { get; private set; }
 
-        public bool isPlayer { get; private set; }
-        public bool isBot { get; private set; }
-
-        new public bool IsLocalPlayer => isPlayer && IsOwner;
-        new public bool IsOwner => spawnParameters.Value.ownerID == NetworkManager.Singleton.LocalClientId;
-        new public ulong OwnerClientId => spawnParameters.Value.ownerID;
+        public new bool IsLocalPlayer => IsPlayer && IsOwner;
+        public new bool IsOwner => spawnParameters.Value.ownerID == NetworkManager.Singleton.LocalClientId;
 
         [HideInInspector]
-        public NetworkVariable<CharacterSpawnParameters> spawnParameters = new NetworkVariable<CharacterSpawnParameters>();
+        public NetworkVariable<CharacterSpawnParameters> spawnParameters = new();
 
-        private CharacterSpawnParameters serverBufferedSpawnParameters;
+        private CharacterSpawnParameters _serverBufferedSpawnParameters;
 
         public override void OnNetworkSpawn()
         {
             if (IsServer)
-                spawnParameters.Value = serverBufferedSpawnParameters;
+                spawnParameters.Value = _serverBufferedSpawnParameters;
         }
 
-        public void SetSpawnParameters(CharacterSpawnParameters spawnParameters)
+        public void SetSpawnParameters(CharacterSpawnParameters spawnParameter)
         {
-            serverBufferedSpawnParameters = spawnParameters;
+            _serverBufferedSpawnParameters = spawnParameter;
         }
 
         private void Awake()
         {
 
-            isPlayer = GetComponent<PlayerBehaviour>() != null;
-            isBot = GetComponent<AIBehaviour>() != null;
+            IsPlayer = GetComponent<PlayerBehaviour>() != null;
+            IsBot = GetComponent<AIBehaviour>() != null;
         }
     }
 }

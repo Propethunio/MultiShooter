@@ -48,7 +48,7 @@ namespace HEAVYART.TopDownShooter.Netcode
                     BulletParameters bulletParameters = new BulletParameters();
 
                     //Bullet owner. defaultOwnerID if it's bot. Requires to register scores in leaderboard.
-                    bulletParameters.ownerID = identityControl.isBot ? SettingsManager.Instance.ai.defaultOwnerID : OwnerClientId;
+                    bulletParameters.ownerID = identityControl.IsBot ? SettingsManager.Instance.ai.defaultOwnerID : OwnerClientId;
 
                     //Current character (scene object) ID.
                     bulletParameters.senderID = NetworkObjectId;

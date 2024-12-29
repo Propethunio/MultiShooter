@@ -8,24 +8,22 @@ namespace HEAVYART.TopDownShooter.Netcode
 {
     public class CharacterSpawnParameters : INetworkSerializable, IEquatable<CharacterSpawnParameters>
     {
-        public ulong ownerID;
-        public string name = string.Empty;
-        public Color color;
-        public int modelIndex;
-        //Add custom parameters here
+        public ulong OwnerID;
+        public string Name = string.Empty;
+        public Color Color;
+        public int ModelIndex;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref ownerID);
-            serializer.SerializeValue(ref name);
-            serializer.SerializeValue(ref color);
-            serializer.SerializeValue(ref modelIndex);
-            //And serialize here
+            serializer.SerializeValue(ref OwnerID);
+            serializer.SerializeValue(ref Name);
+            serializer.SerializeValue(ref Color);
+            serializer.SerializeValue(ref ModelIndex);
         }
 
         public bool Equals(CharacterSpawnParameters other)
         {
-            return ownerID == other.ownerID;
+            return other != null && OwnerID == other.OwnerID;
         }
     }
 }

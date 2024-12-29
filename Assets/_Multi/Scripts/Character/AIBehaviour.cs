@@ -38,7 +38,7 @@ namespace HEAVYART.TopDownShooter.Netcode
             _rigidbodyCharacterController = GetComponent<PlayerMovement>();
             _identityControl = GetComponent<CharacterIdentityControl>();
 
-            var modelIndex = _identityControl.spawnParameters.Value.modelIndex;
+            var modelIndex = _identityControl.spawnParameters.Value.ModelIndex;
             var config = SettingsManager.Instance.ai.configs[modelIndex];
 
             _healthController.Initialize(config.health);

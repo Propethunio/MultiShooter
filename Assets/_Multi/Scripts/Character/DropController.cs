@@ -18,13 +18,13 @@ namespace HEAVYART.TopDownShooter.Netcode
 
             if (identityControl.IsPlayer == true) //Set player drop settings
             {
-                int modelIndex = identityControl.spawnParameters.Value.modelIndex;
+                int modelIndex = identityControl.spawnParameters.Value.ModelIndex;
                 dropElements = SettingsManager.Instance.player.configs[modelIndex].dropElements;
                 dropChance = SettingsManager.Instance.player.configs[modelIndex].dropChance;
             }
             else //Set bot drop settings
             {
-                int modelIndex = identityControl.spawnParameters.Value.modelIndex;
+                int modelIndex = identityControl.spawnParameters.Value.ModelIndex;
                 dropElements = SettingsManager.Instance.ai.configs[modelIndex].dropElements;
                 dropChance = SettingsManager.Instance.ai.configs[modelIndex].dropChance;
             }

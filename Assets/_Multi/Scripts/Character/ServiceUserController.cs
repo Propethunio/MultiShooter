@@ -64,10 +64,10 @@ namespace HEAVYART.TopDownShooter.Netcode
         {
             return new CharacterSpawnParameters()
             {
-                name = PlayerDataKeeper.name,
-                color = SettingsManager.Instance.player.GetPlayerColor(),
-                ownerID = NetworkManager.Singleton.LocalClientId,
-                modelIndex = PlayerDataKeeper.selectedPrefab
+                Name = PlayerDataKeeper.name,
+                Color = SettingsManager.Instance.player.GetPlayerColor(),
+                OwnerID = NetworkManager.Singleton.LocalClientId,
+                ModelIndex = PlayerDataKeeper.selectedPrefab
             };
         }
     }

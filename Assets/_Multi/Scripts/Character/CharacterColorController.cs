@@ -20,7 +20,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         public override void OnNetworkSpawn()
         {
             if (!_identityControl.IsPlayer) return;
-            var targetColor = _identityControl.spawnParameters.Value.color;
+            var targetColor = _identityControl.spawnParameters.Value.Color;
             foreach (var t in renderers)
             {
                 t.material.color = Color.Lerp(t.material.color, targetColor, colorFactor);

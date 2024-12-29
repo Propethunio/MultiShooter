@@ -9,7 +9,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         public bool IsBot { get; private set; }
 
         public new bool IsLocalPlayer => IsPlayer && IsOwner;
-        public new bool IsOwner => spawnParameters.Value.ownerID == NetworkManager.Singleton.LocalClientId;
+        public new bool IsOwner => spawnParameters.Value.OwnerID == NetworkManager.Singleton.LocalClientId;
 
         [HideInInspector]
         public NetworkVariable<CharacterSpawnParameters> spawnParameters = new();

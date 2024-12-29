@@ -42,7 +42,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
             //mainCamera.GetComponent<GameCameraController>().ActivateCameraMovement();
 
             //Settings
-            int modelIndex = identityControl.spawnParameters.Value.modelIndex;
+            int modelIndex = identityControl.spawnParameters.Value.ModelIndex;
             PlayerConfig config = SettingsManager.Instance.player.configs[modelIndex];
 
             //Health
@@ -58,7 +58,7 @@ namespace HEAVYART.TopDownShooter.Netcode {
             //inputActions.Player.Enable();
 
             movementSpeed = config.movementSpeed;
-            gameObject.name = "Player: " + identityControl.spawnParameters.Value.name;
+            gameObject.name = "Player: " + identityControl.spawnParameters.Value.Name;
             rigidbodyCharacterController.Init();
         }
 

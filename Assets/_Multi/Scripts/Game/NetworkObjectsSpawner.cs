@@ -56,7 +56,7 @@ namespace HEAVYART.TopDownShooter.Netcode
         public void SpawnPlayerServerRpc(CharacterSpawnParameters characterSpawnParameters)
         {
             Vector3 spawnPoint = GetRandomPlayerSpawnPoint();
-            GameObject player = Instantiate(SettingsManager.Instance.player.configs[characterSpawnParameters.modelIndex].playerPrefab, spawnPoint, Quaternion.identity);
+            GameObject player = Instantiate(SettingsManager.Instance.player.configs[characterSpawnParameters.ModelIndex].playerPrefab, spawnPoint, Quaternion.identity);
 
             player.GetComponent<CharacterIdentityControl>().SetSpawnParameters(characterSpawnParameters);
 
@@ -65,7 +65,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
             //Change ownership
             //It's possible to spawn through SpawnWithOwnership() but it always spawns in (0,0,0)
-            player.GetComponent<NetworkObject>().ChangeOwnership(characterSpawnParameters.ownerID);
+            player.GetComponent<NetworkObject>().ChangeOwnership(characterSpawnParameters.OwnerID);
         }
 
         [Rpc(SendTo.Server)]
@@ -77,8 +77,8 @@ namespace HEAVYART.TopDownShooter.Netcode
             //Custom spawn parameters
             ai.GetComponent<CharacterIdentityControl>().SetSpawnParameters(new CharacterSpawnParameters()
             {
-                ownerID = NetworkManager.Singleton.LocalClientId,
-                modelIndex = modelIndex
+                OwnerID = NetworkManager.Singleton.LocalClientId,
+                ModelIndex = modelIndex
             });
 
             //Spawn bot

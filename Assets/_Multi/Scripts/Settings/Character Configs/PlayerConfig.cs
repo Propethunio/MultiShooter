@@ -11,12 +11,5 @@ namespace HEAVYART.TopDownShooter.Netcode
         public string label;
 
         public GameObject playerPrefab;
-        public float movementSpeed = 5;
-        public float health;
-
-        [Space()]
-        public float dropChance;
-        public List<PickUpItemController> dropElements;
     }
 }
-

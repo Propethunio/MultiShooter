@@ -15,8 +15,6 @@ namespace HEAVYART.TopDownShooter.Netcode
         public float delayBeforeCountdown;
         public float countdownTime;
         public double gameDuration;
-        public int botsCount;
-        public float botsSpawnRate;
 
         private IEnumerator Start()
         {

@@ -23,13 +23,9 @@ GameObject:
   - component: {fileID: 8691286926942816093}
   - component: {fileID: 3882940198880504483}
   - component: {fileID: 1360611424161042427}
-  - component: {fileID: -2206572183828397139}
   - component: {fileID: 8202940857252649812}
   - component: {fileID: 756642690181678403}
-  - component: {fileID: 7333029196004318406}
-  - component: {fileID: -7021673459001698073}
   - component: {fileID: 2727307397356315498}
-  - component: {fileID: 2331518778710697748}
   - component: {fileID: 4682752543894964188}
   m_Layer: 6
   m_Name: Player
@@ -183,73 +179,16 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   footstepSpeed: 0.8
   soundMenago: {fileID: 4682752543894964188}
-  jumpSFX: {fileID: 8300000, guid: d76e78e8a1e578a4c87d78bed9ad8201, type: 3}
-  landSFX: {fileID: 8300000, guid: 37b972f7551207d44b50f62666b2e497, type: 3}
-  stepSFX:
+  jumpSfx: {fileID: 8300000, guid: d76e78e8a1e578a4c87d78bed9ad8201, type: 3}
+  landSfx: {fileID: 8300000, guid: 37b972f7551207d44b50f62666b2e497, type: 3}
+  stepSfx:
   - {fileID: 8300000, guid: 820eca38f7882e8468e32a1f81e040ee, type: 3}
   - {fileID: 8300000, guid: a8ca0ac2029d22b43b5838b8bd747c20, type: 3}
   events:
-    OnMove:
+    onMove:
       m_PersistentCalls:
         m_Calls: []
-    OnJump:
-      m_PersistentCalls:
-        m_Calls: []
-    OnLand:
-      m_PersistentCalls:
-        m_Calls: []
-    OnCrouch:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStopCrouch:
-      m_PersistentCalls:
-        m_Calls: []
-    OnSprint:
-      m_PersistentCalls:
-        m_Calls: []
-    OnSpawn:
-      m_PersistentCalls:
-        m_Calls: []
-    OnSlide:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStartWallRun:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStopWallRun:
-      m_PersistentCalls:
-        m_Calls: []
-    OnWallBounce:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStartDash:
-      m_PersistentCalls:
-        m_Calls: []
-    OnDashing:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEndDash:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStartClimb:
-      m_PersistentCalls:
-        m_Calls: []
-    OnClimbing:
-      m_PersistentCalls:
-        m_Calls: []
-    OnEndClimb:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStartGrapple:
-      m_PersistentCalls:
-        m_Calls: []
-    OnGrappling:
-      m_PersistentCalls:
-        m_Calls: []
-    OnStopGrapple:
-      m_PersistentCalls:
-        m_Calls: []
-    OnGrappleEnabled:
+    onJump:
       m_PersistentCalls:
         m_Calls: []
   weaponController: {fileID: 0}
@@ -283,7 +222,6 @@ MonoBehaviour:
   directionalJumpMethod: 1
   directionalJumpForce: 0
   jumpCooldown: 0.25
-  roofCheckDistance: 3.5
   fadeInFOVAmount: 5
 --- !u!114 &1985435802025757051
 MonoBehaviour:
@@ -490,19 +428,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &-2206572183828397139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 756642690181678402}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ec12278e7281c44e9935175e062beb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &8202940857252649812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -535,35 +460,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &7333029196004318406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 756642690181678402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c3f0de6ae9b474d45b597ae94efb19e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  delayBeforeDrop: 1
-  delayBeforeStartMoving: 2
-  moveDownTime: 2
---- !u!114 &-7021673459001698073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 756642690181678402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c84854a07195e8346a34de1f39b7bdda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &2727307397356315498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,103 +476,6 @@ MonoBehaviour:
   colorFactor: 0.5
   renderers:
   - {fileID: 7177873704662754930}
---- !u!82 &2331518778710697748
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 756642690181678402}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: eea8dea631dcf7f4a90555611afcc1f1, type: 2}
-  m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!114 &4682752543894964188
 MonoBehaviour:
   m_ObjectHideFlags: 0

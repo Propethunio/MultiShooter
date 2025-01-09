@@ -9,7 +9,6 @@ namespace HEAVYART.TopDownShooter.Netcode
         public CommonSettings common;
         public LobbySettings lobby;
         public PlayerSettings player;
-        public AISettings ai;
         public WeaponSettings weapon;
         public GameplaySettings gameplay;
         new public CameraSettings camera;

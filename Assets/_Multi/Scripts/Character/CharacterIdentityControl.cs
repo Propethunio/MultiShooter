@@ -29,9 +29,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         private void Awake()
         {
-
             IsPlayer = GetComponent<PlayerBehaviour>() != null;
-            IsBot = GetComponent<AIBehaviour>() != null;
         }
     }
 }

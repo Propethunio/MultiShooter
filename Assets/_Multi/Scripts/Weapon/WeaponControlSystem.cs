@@ -11,47 +11,20 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         private Weapon selectedWeapon;
         private CharacterAnimationController animationController;
-        private HealthController healthController;
         private ModifiersControlSystem modifiersControlSystem;
         private CharacterIdentityControl identityControl;
 
         private void Awake()
         {
             animationController = GetComponent<CharacterAnimationController>();
-            healthController = GetComponent<HealthController>();
             modifiersControlSystem = GetComponent<ModifiersControlSystem>();
             identityControl = GetComponent<CharacterIdentityControl>();
-
-            for (int i = 0; i < weapons.Count; i++)
-            {
-                //Link fire animation to fire event
-                weapons[i].OnFire += () => animationController.PlayFireAnimation();
-            }
         }
 
         public override void OnNetworkSpawn()
         {
             //Set default weapon (locally). 
             ActivateWeapon(WeaponType.Rifle);
-        }
-
-        public void Fire()
-        {
-            if (healthController.IsAlive && GameManager.Instance.gameState == GameState.ActiveGame)
-                selectedWeapon.Fire();
-        }
-
-        private void Update()
-        {
-            //Easy weapon switch for debugging
-            if (Application.isEditor == true && identityControl.IsLocalPlayer == true)
-            {
-                if (Input.GetKeyDown(KeyCode.Alpha1)) ActivateWeaponRpc(WeaponType.Pistol);
-
-                if (Input.GetKeyDown(KeyCode.Alpha2)) ActivateWeaponRpc(WeaponType.Rifle);
-
-                if (Input.GetKeyDown(KeyCode.Alpha3)) ActivateWeaponRpc(WeaponType.Shotgun);
-            }
         }
 
         private void FixedUpdate()

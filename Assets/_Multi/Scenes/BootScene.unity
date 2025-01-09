@@ -151,10 +151,10 @@ MonoBehaviour:
   common: {fileID: 888752070}
   lobby: {fileID: 1653770893}
   player: {fileID: 1314904866}
-  ai: {fileID: 1528021341}
+  ai: {fileID: 0}
   weapon: {fileID: 900477176}
   gameplay: {fileID: 1021768821}
-  camera: {fileID: 1810275097}
+  camera: {fileID: 0}
 --- !u!4 &81419512
 Transform:
   m_ObjectHideFlags: 0
@@ -171,10 +171,8 @@ Transform:
   - {fileID: 888752069}
   - {fileID: 1653770894}
   - {fileID: 1314904867}
-  - {fileID: 1528021342}
   - {fileID: 900477177}
   - {fileID: 1021768822}
-  - {fileID: 1810275098}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &888752068
@@ -328,8 +326,6 @@ MonoBehaviour:
   delayBeforeCountdown: 1
   countdownTime: 3
   gameDuration: 300
-  botsCount: 0
-  botsSpawnRate: 5000
 --- !u!4 &1021768822
 Transform:
   m_ObjectHideFlags: 0
@@ -546,64 +542,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!1 &1528021340
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1528021342}
-  - component: {fileID: 1528021341}
-  m_Layer: 0
-  m_Name: AI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1528021341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1528021340}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3e401e8230babb4c9c15534bf2c004d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  configs:
-  - label: Default Bot
-    botPrefab: {fileID: 756642690181678402, guid: 7f4a1eafa3f120e44a1a53c132e28feb, type: 3}
-    movementSpeed: 4.5
-    health: 18
-    distanceToOpenFire: 9
-    targetUpdateRate: 1
-    maneuverAngle: 120
-    minDistanceOfManeuver: 2
-    maxDistanceOfManeuver: 10
-    minDistanceToUpdateManeuverPoint: 0.5
-    maneuverExitTime: 3
-    dropChance: 85
-    dropElements: []
---- !u!4 &1528021342
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1528021340}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 81419512}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1653770892
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,53 +587,6 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1653770892}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 81419512}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1810275096
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1810275098}
-  - component: {fileID: 1810275097}
-  m_Layer: 0
-  m_Name: Camera
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1810275097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1810275096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d6dc24512afeb24aa4802164a35ea41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offset: {x: 0, y: 8, z: -6}
-  angle: 55
-  dampTime: 0.05
---- !u!4 &1810275098
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1810275096}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}

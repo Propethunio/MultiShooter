@@ -13,10 +13,8 @@ using System.Threading.Tasks;
 using System;
 using Unity.Services.Core;
 
-namespace HEAVYART.TopDownShooter.Netcode
-{
-    public class LobbyGameHostingControl
-    {
+namespace HEAVYART.TopDownShooter.Netcode {
+    public class LobbyGameHostingControl {
         private LobbyDataControl dataControl;
         private UnityTransport unityTransport;
 
@@ -24,20 +22,17 @@ namespace HEAVYART.TopDownShooter.Netcode
 
         public List<string> availableRegions { get; private set; } = new List<string>();
 
-        public LobbyGameHostingControl(LobbyDataControl dataControl, UnityTransport unityTransport)
-        {
+        public LobbyGameHostingControl(LobbyDataControl dataControl, UnityTransport unityTransport) {
             this.dataControl = dataControl;
             this.unityTransport = unityTransport;
             UpdateRegions();
         }
 
-        public async Task HostGame(int playersCount)
-        {
+        public async Task HostGame(int playersCount) {
             string selectedRegion = PlayerDataKeeper.selectedRegion;
             string joinCode;
 
-            try
-            {
+            try {
                 //Allocate game session in Relay service
                 Allocation allocation = await RelayService.Instance.CreateAllocationAsync(playersCount, selectedRegion);
 
@@ -46,9 +41,7 @@ namespace HEAVYART.TopDownShooter.Netcode
 
                 //Link current network client to allocated game
                 unityTransport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
-            }
-            catch (Exception e)
-            {
+            } catch(Exception e) {
                 Debug.LogError(e);
                 OnRelayAllocationError?.Invoke();
                 return;
@@ -79,21 +72,17 @@ namespace HEAVYART.TopDownShooter.Netcode
             dataControl.currentLobby = await LobbyService.Instance.UpdateLobbyAsync(dataControl.currentLobby.Id, options);
         }
 
-        public async void JoinHostedGame()
-        {
+        public async void JoinHostedGame() {
             //Get join code from lobby
             string joinCode = dataControl.currentLobby.Data["joinCode"].Value;
 
-            try
-            {
+            try {
                 //Find and join game session
                 JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
                 //Link current network client to allocated game
                 unityTransport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
-            }
-            catch (Exception e)
-            {
+            } catch(Exception e) {
                 Debug.LogError(e);
                 OnRelayAllocationError?.Invoke();
                 return;
@@ -107,11 +96,9 @@ namespace HEAVYART.TopDownShooter.Netcode
             SceneLoadManager.Instance.SubscribeOnNetworkSceneUpdates();
         }
 
-        private async void UpdateRegions()
-        {
+        private async void UpdateRegions() {
             //Update regions once in few days
-            if (PlayerDataKeeper.lastRegionsUpdateTime + new TimeSpan(SettingsManager.Instance.lobby.regionsUpdateRateHours, 0, 0) > DateTime.Now)
-            {
+            if(PlayerDataKeeper.lastRegionsUpdateTime + new TimeSpan(SettingsManager.Instance.lobby.regionsUpdateRateHours, 0, 0) > DateTime.Now) {
                 availableRegions = PlayerDataKeeper.availableRegions;
                 return;
             }
@@ -119,19 +106,17 @@ namespace HEAVYART.TopDownShooter.Netcode
             int fixedDeltaTime = (int)(Time.fixedDeltaTime * 1000);
 
             //Wait for initialization
-            while (UnityServices.State != ServicesInitializationState.Initialized)
+            while(UnityServices.State != ServicesInitializationState.Initialized)
                 await Task.Delay(fixedDeltaTime);
 
             //Wait for sign in
-            while (AuthenticationService.Instance.IsSignedIn == false)
+            while(AuthenticationService.Instance.IsSignedIn == false)
                 await Task.Delay(fixedDeltaTime);
 
             //Get regions
             var regionSearchResult = await QosService.Instance.GetSortedQosResultsAsync("relay", null);
 
-            foreach (var result in regionSearchResult)
-            {
-                Debug.Log("Add region: " + result.Region);
+            foreach(var result in regionSearchResult) {
                 availableRegions.Add(result.Region);
             }
 

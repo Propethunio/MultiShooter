@@ -93,7 +93,6 @@ namespace HEAVYART.TopDownShooter.Netcode {
         [Tooltip("Force applied on an object in the direction of the directional jump"), SerializeField]
         private float directionalJumpForce;
         [Tooltip("Interval between jumping")][Min(.25f), SerializeField] private float jumpCooldown = .25f;
-        [SerializeField, Tooltip("Distance to detect a roof. If an obstacle is detected within this distance, the player will not be able to uncrouch")] private float roofCheckDistance = 3.5f;
         [Tooltip("Fade Speed - Start Transition for the field of view")] public float fadeInFOVAmount;
 
         private void Awake() {

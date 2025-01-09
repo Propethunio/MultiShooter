@@ -32,7 +32,6 @@ namespace HEAVYART.TopDownShooter.Netcode
         private Vector3 _previousPosition;
         private List<Vector3> _directions;
 
-        private HealthController _healthController;
         private ModifiersControlSystem _modifiersControlSystem;
 
         private float[] _animatorLayerWeights;
@@ -52,16 +51,12 @@ namespace HEAVYART.TopDownShooter.Netcode
             _directions = new List<Vector3>() { Vector3.forward, Vector3.right, Vector3.back, Vector3.left };
 
             _modifiersControlSystem = GetComponent<ModifiersControlSystem>();
-            _healthController = GetComponent<HealthController>();
-            _healthController.OnDeath += PlayDeathAnimation;
 
             _animatorLayerWeights = new float[animator.layerCount];
         }
 
         private void LateUpdate()
         {
-            if (_healthController.IsAlive == false)
-                return;
 
             animator.SetFloat(Movement, 0);
             animator.SetFloat(MovementSpeedMultiplier, _modifiersControlSystem.CalculateSpeedMultiplier());

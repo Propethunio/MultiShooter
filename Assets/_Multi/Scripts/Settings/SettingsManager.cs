@@ -11,7 +11,6 @@ namespace HEAVYART.TopDownShooter.Netcode
         public PlayerSettings player;
         public WeaponSettings weapon;
         public GameplaySettings gameplay;
-        new public CameraSettings camera;
 
         void Awake()
         {
